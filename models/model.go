@@ -7,9 +7,10 @@ type User struct {
 	Email       string `json:"email"`
 	Password    string `json:"password"`
 	Address     string `json:"address"`
-	Birthdate   string `json:"birthdate"`
 	UserType    int    `json:"user_type"`
+	PartnerType string `json:"partner_type"`
 	CompanyName string `json:"company_name"`
+	DateCreated string `json:"date_created"`
 }
 
 type MessageResponse struct {

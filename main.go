@@ -3,7 +3,6 @@ package main
 import (
 	"log"
 	"net/http"
-	"os"
 
 	controllers "github.com/Travelokay-Project/controllers"
 	"github.com/gorilla/mux"
@@ -14,11 +13,11 @@ func main() {
 
 	router := mux.NewRouter()
 
-	router.HandleFunc("/loginUser", controllers.LoginUser).Methods("POST")
+	router.HandleFunc("/login", controllers.Login).Methods("POST")
+	router.HandleFunc("/logout", controllers.Logout).Methods("GET")
 
-	svrPort := os.Getenv("SVR_PORT")
+	svrPort := controllers.LoadEnv("SVR_PORT")
 	log.Println("Connected to port " + svrPort)
 	addr := ":" + svrPort
 	http.ListenAndServe(addr, router)
-
 }
