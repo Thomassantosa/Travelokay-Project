@@ -10,10 +10,9 @@ import (
 func SendSuccessResponse(w http.ResponseWriter) {
 
 	// success response
-	// var response MessageResponse
 	response := models.MessageResponse{}
 	response.Status = 200
-	response.Message = "Request success"
+	response.Message = "Success"
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(response)
