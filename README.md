@@ -1,8 +1,8 @@
 # Travelokay-Project
 
-| Endpoint	    | Access	| Method	| Function          |
-| ------------- | --------- | --------- |------------------ |
-| /login	    | All		| POST		| Login             |
+| Endpoint	    | Access	| Method	| Function          | Response          | Desc                                                          |
+| ------------- | --------- | --------- | ----------------- | ----------------- | ------------------------------------------------------------- |
+| /login	    | All		| POST		| Login             | MessageResponse   | Saat login berhasil, akan menghasilkan cookie berisi token    |
 | /logout	    | All		| GET		| Logout            |
 | /user		    | User		| POST		| AddNewUser	    |
 | /user		    | User		| PUT		| UpdateUser	    |
@@ -18,7 +18,6 @@
 | /user/tour	| User		| POST		| AddNewTourOrder   |
 | /user/order	| User		| GET		| GetUserOrder      |
 | /user/order	| User		| DELETE	| RequestRefund     |
-| ------------- | --------- | --------- |------------------ |
 | /mitra	    | Mitra		| POST		| AddNewMitra	    |
 | /mitra	    | Mitra		| PUT		| UpdateMitra   	|
 | /mitra/product| Mitra		| GET		| GetProductList   	|
@@ -26,3 +25,4 @@
 | /mitra/product| Mitra		| DELETE	| DeleteProduct   	|
 | /admin/refund | Mitra		| GET		| GetRefundList   	|
 | /admin/refund | Mitra		| DELETE	| ApproveRefund   	|
+
