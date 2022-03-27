@@ -1,0 +1,14 @@
+# TODO
+
+- Delete database columns "departure_date", "arrival_date"
+- Update datatype columns "departure_time", "arrival_time" to datetime
+- Make new table "refunds"
+- Update endpoint details
+  Flight (Get, Add, Delete)
+  Bus (Get, Add, Delete)
+  Train (Get, Add, Delete)
+  Hotel (Get, Add, Delete)
+  Tour (Get, Add, Delete)
+
+
+

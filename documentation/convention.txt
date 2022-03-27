@@ -1,0 +1,8 @@
+Language convention :
+- file, variable, function, etc       = english
+- comment                             = english / indonesia
+
+Naming Convention :
+- folder/package                      = single-word lowercase
+- file                                = snake_case
+- variable, function, struct          = camelCase / CamelCase
