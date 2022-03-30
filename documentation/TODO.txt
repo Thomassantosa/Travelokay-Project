@@ -9,6 +9,7 @@
   Train (Get, Add, Delete)
   Hotel (Get, Add, Delete)
   Tour (Get, Add, Delete)
+- Add Gomail, Goroutine, and GoCRON to this project (feature : Daily promo info from gmail)
 
 
 
