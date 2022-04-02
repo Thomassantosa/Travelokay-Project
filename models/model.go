@@ -13,6 +13,18 @@ type User struct {
 	DateCreated string `json:"date_created"`
 }
 
+type Hotel struct {
+	ID            int     `json:"id"`
+	HotelName     string  `json:"hotel_name"`
+	HotelStar     int     `json:"hotel_star"`
+	HotelRating   float32 `json:"hotel_rating"`
+	HotelReview   int     `json:"hotel_review"`
+	HotelFacility string  `json:"hotel_facility"`
+	HotelAddress  string  `json:"hotel_address"`
+	HotelCity     string  `json:"hotel_city"`
+	HotelCountry  string  `json:"hotel_country"`
+}
+
 type MessageResponse struct {
 	Status  int    `json:"status"`
 	Message string `json:"message"`
@@ -28,4 +40,16 @@ type UsersResponse struct {
 	Status  int    `json:"status"`
 	Message string `json:"message"`
 	Data    []User `json:"data"`
+}
+
+type HotelResponse struct {
+	Status  int    `json:"status"`
+	Message string `json:"message"`
+	Data    Hotel  `json:"data"`
+}
+
+type HotelsResponse struct {
+	Status  int     `json:"status"`
+	Message string  `json:"message"`
+	Data    []Hotel `json:"data"`
 }
