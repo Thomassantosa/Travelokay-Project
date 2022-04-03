@@ -50,7 +50,7 @@ func Logout(w http.ResponseWriter, r *http.Request) {
 	ResetUserToken(w)
 	SendSuccessResponse(w)
 }
-func InsertUsers(w http.ResponseWriter, r *http.Request) {
+func AddNewUser(w http.ResponseWriter, r *http.Request) {
 
 	// connect to database
 	db := Connect()
