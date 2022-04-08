@@ -93,14 +93,40 @@ func UpdateUsers(w http.ResponseWriter, r *http.Request) {
 	fullname := r.Form.Get("fullname")
 	username := r.Form.Get("username")
 	email := r.Form.Get("email")
-	password := r.Form.Get("password")
-	address := r.Form.Get("address")
-	user_type := r.Form.Get("user_type")
-	partner_type := r.Form.Get("partner_type")
-	company_name := r.Form.Get("company_name")
-	date_created := r.Form.Get("date_created")
+	// password := r.Form.Get("password")
+	// address := r.Form.Get("address")
+	// user_type := r.Form.Get("user_type")
+	// date_created := r.Form.Get("date_created")
 
-	result, errQuery := db.Exec("UPDATE users SET fullname=?, username=?, password=?, address=?, user_type=?, partner_type=?, company_name=?, date_created=? WHERE email=?", fullname, username, password, address, user_type, partner_type, company_name, date_created, email)
+	query := "UPDATE users SET"
+
+	if fullname != "" {
+		query += " fullname='" + fullname + "',"
+	}
+	if username != "" {
+		query += " username='" + username + "',"
+	}
+	// if email != "" {
+	// 	query += " email='" + email + ","
+	// }
+	// if password != "" {
+	// 	query += " password=" + password + ","
+	// }
+	// if address != "" {
+	// 	query += " address=" + address + ","
+	// }
+	// if user_type != "" {
+	// 	query += " user_type=" + user_type + ","
+	// }
+	// if date_created != "" {
+	// 	query += " date_created=" + date_created + ","
+	// }
+	query1 := query[:len(query)-1]
+	query1 += " WHERE email=" + email + "'"
+
+	log.Println(query1)
+
+	result, errQuery := db.Exec(query1)
 
 	num, _ := result.RowsAffected()
 
