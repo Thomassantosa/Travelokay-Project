@@ -6,3 +6,4 @@ Naming Convention :
 - folder/package                      = single-word lowercase
 - file                                = snake_case
 - variable, function, struct          = camelCase / CamelCase
+- Query form key                      = camelCase

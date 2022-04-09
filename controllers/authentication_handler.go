@@ -11,24 +11,25 @@ import (
 	"github.com/golang-jwt/jwt/v4"
 )
 
+// Get value from env
 var stringKey = LoadEnv("JWT_KEY")
 var jwtKey = []byte(stringKey)
 var tokenName = "token"
 
 type Claims struct {
 	ID       int    `json:"id"`
-	Name     string `json:"name"`
+	Username string `json:"username"`
 	UserType int    `json:"user_type"`
 	jwt.StandardClaims
 }
 
-func GenerateToken(w http.ResponseWriter, id int, name string, userType int) {
+func GenerateToken(w http.ResponseWriter, id int, username string, userType int) {
 	tokenExpiryTime := time.Now().Add(5 * time.Minute)
 
 	// create claims with user data
 	claims := &Claims{
 		ID:       id,
-		Name:     name,
+		Username: username,
 		UserType: userType,
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: tokenExpiryTime.Unix(),
@@ -84,8 +85,8 @@ func Authenticate(next http.HandlerFunc, accessType int) http.HandlerFunc {
 }
 
 func ValidateUserToken(r *http.Request, accessType int) bool {
-	isAccessTokenValid, id, email, userType := ValidateTokenFormCookies(r)
-	fmt.Println(id, email, userType, accessType, isAccessTokenValid)
+	isAccessTokenValid, id, username, userType := ValidateTokenFormCookies(r)
+	fmt.Println(id, username, userType, accessType, isAccessTokenValid)
 
 	if isAccessTokenValid {
 		isUserValid := userType == accessType
@@ -108,7 +109,7 @@ func ValidateTokenFormCookies(r *http.Request) (bool, int, string, int) {
 		})
 
 		if err2 == nil && parsedToken.Valid {
-			return true, accessClaims.ID, accessClaims.Name, accessClaims.UserType
+			return true, accessClaims.ID, accessClaims.Username, accessClaims.UserType
 		} else {
 			log.Println(err2)
 		}

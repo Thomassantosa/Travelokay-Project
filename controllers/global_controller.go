@@ -1,6 +1,8 @@
 package controllers
 
 import (
+	"crypto/md5"
+	"encoding/hex"
 	"encoding/json"
 	"log"
 	"net/http"
@@ -9,7 +11,6 @@ import (
 
 	models "github.com/Travelokay-Project/models"
 	"github.com/joho/godotenv"
-	// "github.com/Travelokay-Project/models"
 )
 
 func LoadEnv(key string) string {
@@ -30,19 +31,66 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	db := Connect()
 	defer db.Close()
 
-	email := r.FormValue("Email")
-	password := r.FormValue("Password")
+	// Get value from form
+	email := r.FormValue("email")
+	password := r.FormValue("password")
 
-	row := db.QueryRow("SELECT * FROM users WHERE email=? AND password=?", email, password)
-	var user models.User
-	if err := row.Scan(&user.ID, &user.Fullname, &user.Username, &user.Email, &user.Password, &user.Address, &user.UserType, &user.PartnerType, &user.CompanyName, &user.DateCreated); err != nil {
-		log.Println(row)
+	// Encrypt password
+	// hasher := md5.New()
+	// hasher.Write([]byte(password))
+	// encryptedPassword := hex.EncodeToString(hasher.Sum(nil))
+
+	// Query
+	row := db.QueryRow("SELECT user_type FROM users WHERE email=? AND password=?", email, password)
+	var userType int
+	if err := row.Scan(&userType); err != nil {
 		SendErrorResponse(w, 400)
 		log.Print(err)
+		log.Print("(ERROR) email or username not found")
 	} else {
-		GenerateToken(w, user.ID, user.Username, user.UserType)
-		SendSuccessResponse(w)
+
+		if userType == 2 {
+			row := db.QueryRow("SELECT * FROM users WHERE email=? AND password=?", email, password)
+			var partner models.Partner
+			if err := row.Scan(&partner.ID, &partner.Fullname, &partner.Username, &partner.Email, &partner.Password, &partner.Address, &partner.UserType, &partner.PartnerType, &partner.CompanyName, &partner.DateCreated); err != nil {
+				SendErrorResponse(w, 400)
+				log.Print("A")
+				log.Print(err)
+			} else {
+				GenerateToken(w, partner.ID, partner.Username, partner.UserType)
+
+				// Response
+				var partnerResponse models.PartnerResponse
+				partnerResponse.Status = 200
+				partnerResponse.Message = "Request success"
+				partnerResponse.Data = partner
+
+				w.Header().Set("Content-Type", "application/json")
+				json.NewEncoder(w).Encode(partnerResponse)
+			}
+		} else {
+			row := db.QueryRow("SELECT user_id, fullname, username, email, password, address, user_type, date_created FROM users WHERE email=? AND password=?", email, password)
+			var user models.User
+			if err := row.Scan(&user.ID, &user.Fullname, &user.Username, &user.Email, &user.Password, &user.Address, &user.UserType, &user.DateCreated); err != nil {
+				SendErrorResponse(w, 400)
+				log.Print(err)
+				log.Print("B")
+			} else {
+				GenerateToken(w, user.ID, user.Username, user.UserType)
+
+				// Response
+				var userResponse models.UserResponse
+				userResponse.Status = 200
+				userResponse.Message = "Request success"
+				userResponse.Data = user
+
+				w.Header().Set("Content-Type", "application/json")
+				json.NewEncoder(w).Encode(userResponse)
+			}
+
+		}
 	}
+
 }
 
 func Logout(w http.ResponseWriter, r *http.Request) {
@@ -50,12 +98,14 @@ func Logout(w http.ResponseWriter, r *http.Request) {
 	ResetUserToken(w)
 	SendSuccessResponse(w)
 }
+
 func AddNewUser(w http.ResponseWriter, r *http.Request) {
 
 	// connect to database
 	db := Connect()
 	defer db.Close()
 
+	// Get value from form
 	err := r.ParseForm()
 	if err != nil {
 		return
@@ -65,27 +115,29 @@ func AddNewUser(w http.ResponseWriter, r *http.Request) {
 	email := r.Form.Get("email")
 	password := r.Form.Get("password")
 	address := r.Form.Get("address")
-	user_type := r.Form.Get("user_type")
-	partner_type := r.Form.Get("partner_type")
-	company_name := r.Form.Get("company_name")
-	date_created := r.Form.Get("date_created")
 
-	_, errQuery := db.Exec("INSERT INTO users(fullname,username,email,password,address,user_type,partner_type,company_name,date_created) values (?,?,?,?,?,?,?,?,?)", fullname, username, email, password, address, user_type, partner_type, company_name, date_created)
+	// Encrypt password
+	hasher := md5.New()
+	hasher.Write([]byte(password))
+	encryptedPassword := hex.EncodeToString(hasher.Sum(nil))
+
+	// Query
+	_, errQuery := db.Exec("INSERT INTO users(fullname, username, email, password, address, user_type) values (?,?,?,?,?,1)", fullname, username, email, encryptedPassword, address)
 
 	if errQuery == nil {
 		SendSuccessResponse(w)
 	} else {
 		SendErrorResponse(w, 400)
 	}
-
-	db.Close()
 }
-func UpdateUsers(w http.ResponseWriter, r *http.Request) {
+
+func AddNewPartner(w http.ResponseWriter, r *http.Request) {
 
 	// connect to database
 	db := Connect()
 	defer db.Close()
 
+	// Get value from form
 	err := r.ParseForm()
 	if err != nil {
 		return
@@ -93,55 +145,24 @@ func UpdateUsers(w http.ResponseWriter, r *http.Request) {
 	fullname := r.Form.Get("fullname")
 	username := r.Form.Get("username")
 	email := r.Form.Get("email")
-	// password := r.Form.Get("password")
-	// address := r.Form.Get("address")
-	// user_type := r.Form.Get("user_type")
-	// date_created := r.Form.Get("date_created")
+	password := r.Form.Get("password")
+	address := r.Form.Get("address")
+	partner_type := r.Form.Get("partner_type")
+	company_name := r.Form.Get("company_name")
 
-	query := "UPDATE users SET"
+	// Encrypt password
+	hasher := md5.New()
+	hasher.Write([]byte(password))
+	encryptedPassword := hex.EncodeToString(hasher.Sum(nil))
 
-	if fullname != "" {
-		query += " fullname='" + fullname + "',"
-	}
-	if username != "" {
-		query += " username='" + username + "',"
-	}
-	// if email != "" {
-	// 	query += " email='" + email + ","
-	// }
-	// if password != "" {
-	// 	query += " password=" + password + ","
-	// }
-	// if address != "" {
-	// 	query += " address=" + address + ","
-	// }
-	// if user_type != "" {
-	// 	query += " user_type=" + user_type + ","
-	// }
-	// if date_created != "" {
-	// 	query += " date_created=" + date_created + ","
-	// }
-	query1 := query[:len(query)-1]
-	query1 += " WHERE email=" + email + "'"
-
-	log.Println(query1)
-
-	result, errQuery := db.Exec(query1)
-
-	num, _ := result.RowsAffected()
+	// Query
+	_, errQuery := db.Exec("INSERT INTO users(fullname, username, email, password, address, user_type, partner_type, company_name) values (?,?,?,?,?,2,?,?)", fullname, username, email, encryptedPassword, address, partner_type, company_name)
 
 	if errQuery == nil {
-		if num == 0 {
-			SendErrorResponse(w, 400)
-		} else {
-			SendSuccessResponse(w)
-			log.Println(email)
-		}
+		SendSuccessResponse(w)
 	} else {
 		SendErrorResponse(w, 400)
 	}
-
-	db.Close()
 }
 
 func GetHotelList(w http.ResponseWriter, r *http.Request) {
