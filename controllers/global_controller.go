@@ -93,10 +93,8 @@ func UpdateUsers(w http.ResponseWriter, r *http.Request) {
 	fullname := r.Form.Get("fullname")
 	username := r.Form.Get("username")
 	email := r.Form.Get("email")
-	// password := r.Form.Get("password")
-	// address := r.Form.Get("address")
-	// user_type := r.Form.Get("user_type")
-	// date_created := r.Form.Get("date_created")
+	password := r.Form.Get("password")
+	address := r.Form.Get("address")
 
 	query := "UPDATE users SET"
 
@@ -106,21 +104,13 @@ func UpdateUsers(w http.ResponseWriter, r *http.Request) {
 	if username != "" {
 		query += " username='" + username + "',"
 	}
-	// if email != "" {
-	// 	query += " email='" + email + ","
-	// }
-	// if password != "" {
-	// 	query += " password=" + password + ","
-	// }
-	// if address != "" {
-	// 	query += " address=" + address + ","
-	// }
-	// if user_type != "" {
-	// 	query += " user_type=" + user_type + ","
-	// }
-	// if date_created != "" {
-	// 	query += " date_created=" + date_created + ","
-	// }
+	if password != "" {
+		query += " password=" + password + ","
+	}
+	if address != "" {
+		query += " address=" + address + ","
+	}
+
 	query1 := query[:len(query)-1]
 	query1 += " WHERE email=" + email + "'"
 
@@ -161,7 +151,7 @@ func GetHotelList(w http.ResponseWriter, r *http.Request) {
 	var hotels []models.Hotel
 
 	for rows.Next() {
-		if err := rows.Scan(&hotel.ID, &hotel.HotelName, &hotel.HotelStar, &hotel.HotelReview, &hotel.HotelRating, &hotel.HotelAddress, &hotel.HotelFacility, &hotel.HotelCity, &hotel.HotelCountry); err != nil {
+		if err := rows.Scan(&hotel.ID, &hotel.HotelName, &hotel.HotelStar, &hotel.HotelRating, &hotel.HotelReview, &hotel.HotelFacility, &hotel.HotelAddress, &hotel.HotelCity, &hotel.HotelCountry); err != nil {
 			log.Println(err.Error())
 		} else {
 			hotels = append(hotels, hotel)
@@ -271,7 +261,7 @@ func GetFlightList(w http.ResponseWriter, r *http.Request) {
 	var flights []models.Flight
 
 	for rows.Next() {
-		if err := rows.Scan(&flight.ID, &flight.AirplaneID, &flight.DepartureAirport, &flight.DestinationAirport, &flight.FlightType, &flight.FlightNumber, &flight.DepartureTime, &flight.ArrivalTime, &flight.DepartureDate, &flight.ArrivalDate, &flight.TravelTime); err != nil {
+		if err := rows.Scan(&flight.ID, &flight.AirplaneID, &flight.DepartureAirport, &flight.DestinationAirport, &flight.FlightType, &flight.FlightNumber, &flight.DepartureTime, &flight.ArrivalTime, &flight.TravelTime); err != nil {
 			log.Println(err.Error())
 		} else {
 			flights = append(flights, flight)
@@ -312,7 +302,7 @@ func GetBusList(w http.ResponseWriter, r *http.Request) {
 	var buses []models.Bustrip
 
 	for rows.Next() {
-		if err := rows.Scan(&bus.ID, &bus.BusID, &bus.DepartureBusstation, &bus.DestinationBusstation, &bus.BusNumber, &bus.DepartureTime, &bus.ArrivalTime, &bus.DepartureDate, &bus.ArrivalDate, &bus.TravelTime); err != nil {
+		if err := rows.Scan(&bus.ID, &bus.BusID, &bus.DepartureBusstation, &bus.DestinationBusstation, &bus.BusNumber, &bus.DepartureTime, &bus.ArrivalTime, &bus.TravelTime); err != nil {
 			log.Println(err.Error())
 		} else {
 			buses = append(buses, bus)
@@ -353,7 +343,7 @@ func GetTrainList(w http.ResponseWriter, r *http.Request) {
 	var trains []models.Traintrip
 
 	for rows.Next() {
-		if err := rows.Scan(&train.ID, &train.TrainID, &train.DepartureStation, &train.DestinationStation, &train.TraintripNumber, &train.DepartureTime, &train.ArrivalTime, &train.DepartureDate, &train.ArrivalDate, &train.TravelTime); err != nil {
+		if err := rows.Scan(&train.ID, &train.TrainID, &train.DepartureStation, &train.DestinationStation, &train.TraintripNumber, &train.DepartureTime, &train.ArrivalTime, &train.TravelTime); err != nil {
 			log.Println(err.Error())
 		} else {
 			trains = append(trains, train)
