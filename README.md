@@ -21,9 +21,9 @@
 | 17 | /user/order 	    | User		| DELETE	| RequestRefund             | MessageResponse                   | Update order_status.                                                                                  |
 | 18 | /partner	        | All		| POST		| AddNewMitra	            | MessageResponse                   | Register partner.                                                                                     |
 | 19 | /partner	        | Partner	| PUT		| UpdateMitra   	        | MessageResponse                   | -                                                                                                     |
-| 20 | /partner/flight  | Partner	| GET		| GetFlightPartnerList   	| FlightsResponse                   | Cek apakah perusahaan partner sama dengan params.                                                     |
-| 21 | /partner/flight  | Partner	| POST  	| AddNewFlight   	        | FlightResponse                    | Query berbeda berdasarkan jenis partner.                                                              |
-| 22 | /partner/flight  | Partner	| DELETE	| DeleteFlight   	        | MessageResponse                   | Query berbeda berdasarkan jenis partner.                                                              |
+| 20 | /partner/flight  | Partner	| GET		| GetFlightPartnerList   	| FlightsResponse                   | Cek berdasarkan nama perusahaan partner.                                                              |
+| 21 | /partner/flight  | Partner	| POST  	| AddNewFlight   	        | FlightResponse                    | Cek berdasarkan nama perusahaan partner.                                                              |
+| 22 | /partner/flight  | Partner	| DELETE	| DeleteFlight   	        | MessageResponse                   | Cek berdasarkan nama perusahaan partner.                                                              |
 | 23 | /admin/refund    | Admin		| GET		| GetRefundList   	        | RefundsResponse                   | -                                                                                                     |
 | 24 | /admin/refund    | Admin		| DELETE	| ApproveRefund   	        | MessageResponse                   | -                                                                                                     |
 
