@@ -8,7 +8,7 @@
     -> Handle endpoint access (admin, user, partner)
 4) Tools
     -> Gomail       : Order receipt dikirimkan ke email user
-    -> GoCRON       : Tiap minggu mengirimkan promo ke rmail user
+    -> GoCRON       : Tiap minggu mengirimkan promo ke email user
     -> Goroutine    : Proses query & pengiriman email dilakukan bersamaan
 
 5) Github Action
