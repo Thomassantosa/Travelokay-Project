@@ -8,6 +8,17 @@ type User struct {
 	Password    string `json:"password"`
 	Address     string `json:"address"`
 	UserType    int    `json:"user_type"`
+	DateCreated string `json:"date_created"`
+}
+
+type Partner struct {
+	ID          int    `json:"id"`
+	Fullname    string `json:"fullname"`
+	Username    string `json:"username"`
+	Email       string `json:"email"`
+	Password    string `json:"password"`
+	Address     string `json:"address"`
+	UserType    int    `json:"user_type"`
 	PartnerType string `json:"partner_type"`
 	CompanyName string `json:"company_name"`
 	DateCreated string `json:"date_created"`
@@ -93,6 +104,18 @@ type UsersResponse struct {
 	Status  int    `json:"status"`
 	Message string `json:"message"`
 	Data    []User `json:"data"`
+}
+
+type PartnerResponse struct {
+	Status  int     `json:"status"`
+	Message string  `json:"message"`
+	Data    Partner `json:"data"`
+}
+
+type PartnersResponse struct {
+	Status  int       `json:"status"`
+	Message string    `json:"message"`
+	Data    []Partner `json:"data"`
 }
 
 type HotelResponse struct {
