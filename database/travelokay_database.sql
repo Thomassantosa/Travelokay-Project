@@ -40,7 +40,9 @@ CREATE TABLE `airlines` (
 INSERT INTO `airlines` (`airline_id`, `airline_name`, `airline_contact`) VALUES
 (1, 'Air Asia', 'airasia@gmail.com'),
 (2, 'Citilink', 'citilink@gmail.com'),
-(3, 'Garuda Air', 'garudaair@gmail.com');
+(3, 'Garuda Air', 'garudaair@gmail.com'),
+(4, 'Batik Air', 'batikair@gmail.com'),
+(5, 'Fly Emirates', 'flyemirates@gmail.com');
 
 -- --------------------------------------------------------
 
@@ -108,7 +110,9 @@ CREATE TABLE `buscompanies` (
 --
 
 INSERT INTO `buscompanies` (`buscompany_id`, `buscompany_name`, `buscompany_contact`, `buscompany_address`) VALUES
-(1, 'PT Bus Nusantara', 'nusantara@gmail.com', 'jawa tengah');
+(1, 'PT Bus Nusantara', 'nusantara@gmail.com', 'jawa tengah'),
+(2, 'PT Bus Indonesia', 'busindo@gmail.com', 'dki jakarta'),
+(3, 'PT Lintas Pulau', 'lintaspulau@gmail.com', 'sumatra barat');
 
 -- --------------------------------------------------------
 
@@ -128,7 +132,11 @@ CREATE TABLE `buses` (
 
 INSERT INTO `buses` (`bus_id`, `buscompany_id`, `bus_model`) VALUES
 (1, 1, 'Mercedes a11'),
-(2, 1, 'Mercedes b33');
+(2, 1, 'Mercedes b33'),
+(3, 2, 'Mercedes a11'),
+(4, 2, 'Mercedes b33'),
+(5, 3, 'Mercedes a11'),
+(6, 3, 'Mercedes b33');
 
 -- --------------------------------------------------------
 
@@ -149,7 +157,9 @@ CREATE TABLE `busstations` (
 
 INSERT INTO `busstations` (`busstation_id`, `busstation_code`, `busstation_name`, `busstation_city`) VALUES
 (1, 'BA', 'Stasiun Semarang', 'semarang'),
-(2, 'BB', 'Stasiun Bandung', 'semarang');
+(2, 'BB', 'Stasiun Bandung', 'bandung'),
+(3, 'BJ', 'Stasiun Jakarta', 'jakarta'),
+(4, 'BP', 'Stasiun Padang', 'padang');
 
 -- --------------------------------------------------------
 
@@ -173,7 +183,11 @@ CREATE TABLE `bustrips` (
 --
 
 INSERT INTO `bustrips` (`bustrip_id`, `bus_id`, `departure_busstation`, `destination_busstation`, `bustrip_number`, `departure_time`, `arrival_time`, `travel_time`) VALUES
-(1, 1, 1, 2, 'BT001', '2022-04-09 18:00:00', '2022-04-10 02:00:00', 8);
+(1, 1, 1, 2, 'BT001', '2022-04-09 18:00:00', '2022-04-10 02:00:00', 8),
+(2, 4, 2, 3, 'BT002', '2022-04-19 12:00:00', '2022-04-19 15:00:00', 3),
+(3, 3, 2, 4, 'BT003', '2022-04-02 18:00:00', '2022-04-10 04:00:00', 10),
+(4, 6, 4, 1, 'BT004', '2022-04-20 20:00:00', '2022-04-21 08:00:00', 12),
+(5, 2, 1, 4, 'BT005', '2022-04-21 12:00:00', '2022-04-22 00:00:00', 12);
 
 -- --------------------------------------------------------
 
@@ -226,7 +240,10 @@ CREATE TABLE `hotels` (
 --
 
 INSERT INTO `hotels` (`hotel_id`, `hotel_name`, `hotel_star`, `hotel_rating`, `hotel_review`, `hotel_facility`, `hotel_address`, `hotel_city`, `hotel_country`) VALUES
-(1, 'Hotel Indonesia', 5, '4.8', 1000, 'pool, park', 'jln. bundaran hi', 'jakarta', 'indoesia');
+(1, 'Hotel Indonesia', 5, '4.8', 1000, 'pool, park, spa, gym', 'jln. bundaran hi', 'jakarta', 'indonesia'),
+(2, 'Hotel Aston', 5, '4.5', 2500, 'pool, park, mart, lounge', 'jln. lebak bulus', 'jakarta', 'indonesia'),
+(3, 'Hotel Singapore', 5, '4.7', 963, 'pool, park, gym, lounge', 'jln. patung singa', 'singapore', 'singapore'),
+(4, 'Hotel Osaka', 3, '4.1', 5432, 'pool, park', 'jln. nobita', 'osaka', 'japan');
 
 -- --------------------------------------------------------
 
@@ -279,7 +296,13 @@ CREATE TABLE `rooms` (
 
 INSERT INTO `rooms` (`room_id`, `hotel_id`, `room_name`, `room_type`, `room_price`, `room_facility`, `room_capacity`, `room_status`, `checkin`, `checkout`) VALUES
 (1, 1, 'Suite Room', 'suite', 1000000, 'ac, shower, breakfast', 2, 1, NULL, NULL),
-(2, 1, 'VIP room', 'vip', 3000000, 'ac, shower, breakfast', 1, 0, NULL, NULL);
+(2, 1, 'VIP room', 'vip', 3000000, 'ac, shower, tv, breakfast', 4, 0, NULL, NULL),
+(3, 2, 'Suite Room', 'suite', 900000, 'ac, shower, breakfast', 2, 1, NULL, NULL),
+(4, 2, 'VIP room', 'vip', 2500000, 'ac, shower, breakfast', 2, 0, NULL, NULL),
+(5, 3, 'Suite Room', 'suite', 1500000, 'ac, shower, tv, breakfast', 2, 1, NULL, NULL),
+(6, 3, 'VIP room', 'vip', 3200000, 'ac, shower, breakfast', 2, 0, NULL, NULL),
+(7, 4, 'Suite Room', 'suite', 700000, 'ac, shower, breakfast', 2, 0, NULL, NULL),
+(8, 4, 'VIP room', 'vip', 1800000, 'ac, shower, tv, breakfast', 2, 1, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -439,7 +462,9 @@ CREATE TABLE `traintrips` (
 --
 
 INSERT INTO `traintrips` (`traintrip_id`, `train_id`, `departure_station`, `destination_station`, `trainTrip_number`, `departure_time`, `arrival_time`, `travel_time`) VALUES
-(1, 1, 1, 2, 'TT001', '2022-04-09 10:00:00', '2022-04-09 18:00:00', 8);
+(1, 1, 1, 2, 'TT001', '2022-04-09 10:00:00', '2022-04-09 18:00:00', 8),
+(2, 1, 1, 3, 'TT002', '2022-04-29 10:00:00', '2022-04-09 12:00:00', 2),
+(3, 1, 3, 2, 'TT003', '2022-04-07 11:00:00', '2022-04-09 13:00:00', 3);
 
 -- --------------------------------------------------------
 
