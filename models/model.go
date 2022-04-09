@@ -14,15 +14,15 @@ type User struct {
 }
 
 type Hotel struct {
-	ID            int    `json:"hotel_id"`
-	HotelName     string `json:"hotel_name"`
-	HotelStar     int    `json:"hotel_star"`
-	HotelRating   int    `json:"hotel_rating"`
-	HotelReview   int    `json:"hotel_review"`
-	HotelFacility string `json:"hotel_facility"`
-	HotelAddress  string `json:"hotel_address"`
-	HotelCity     string `json:"hotel_city"`
-	HotelCountry  string `json:"hotel_country"`
+	ID            int     `json:"hotel_id"`
+	HotelName     string  `json:"hotel_name"`
+	HotelStar     int     `json:"hotel_star"`
+	HotelRating   float64 `json:"hotel_rating"`
+	HotelReview   int     `json:"hotel_review"`
+	HotelFacility string  `json:"hotel_facility"`
+	HotelAddress  string  `json:"hotel_address"`
+	HotelCity     string  `json:"hotel_city"`
+	HotelCountry  string  `json:"hotel_country"`
 }
 
 type Room struct {
@@ -46,9 +46,7 @@ type Flight struct {
 	FlightType         string `json:"flight_type"`
 	FlightNumber       string `json:"flight_number"`
 	DepartureTime      string `json:"departure_time"`
-	DepartureDate      string `json:"departure_date"`
 	ArrivalTime        string `json:"arrival_time"`
-	ArrivalDate        string `json:"arrival_date"`
 	TravelTime         int    `json:"travel_time"`
 }
 
@@ -59,9 +57,7 @@ type Bustrip struct {
 	DestinationBusstation int    `json:"destination_busstation"`
 	BusNumber             string `json:"bus_number"`
 	DepartureTime         string `json:"departure_time"`
-	DepartureDate         string `json:"departure_date"`
 	ArrivalTime           string `json:"arrival_time"`
-	ArrivalDate           string `json:"arrival_date"`
 	TravelTime            int    `json:"travel_time"`
 }
 
@@ -72,9 +68,7 @@ type Traintrip struct {
 	DestinationStation int    `json:"destination_station"`
 	TraintripNumber    string `json:"trainTrip_number"`
 	DepartureTime      string `json:"departure_time"`
-	DepartureDate      string `json:"departure_date"`
 	ArrivalTime        string `json:"arrival_time"`
-	ArrivalDate        string `json:"arrival_date"`
 	TravelTime         int    `json:"travel_time"`
 }
 
