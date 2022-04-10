@@ -89,6 +89,28 @@ type Traintrip struct {
 	TravelTime         int    `json:"travel_time"`
 }
 
+type Tours struct {
+	ID           int     `json:"tour_id"`
+	TourName     string  `json:"tour_name"`
+	TourRating   float32 `json:"tour_rating"`
+	TourReview   int     `json:"tour_review"`
+	TourDesc     string  `json:"tour_desc"`
+	TourFacility string  `json:"tour_facility"`
+	TourAddress  string  `json:"tour_address"`
+	TourCity     string  `json:"tour_city"`
+	TourProvince string  `json:"tour_province"`
+	TourCountry  string  `json:"tour_country"`
+}
+
+type ToursSchedule struct {
+	ID          int `json:"schedule_id"`
+	TourName    int `json:"tour_id"`
+	ScheduleDay int `json:"schedule_day"`
+	OpenTime    int `json:"opentime"`
+	CloseTime   int `json:"closetime"`
+	Price       int `json:"price"`
+}
+
 type MessageResponse struct {
 	Status  int    `json:"status"`
 	Message string `json:"message"`

@@ -36,12 +36,12 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	password := r.FormValue("password")
 
 	// Encrypt password
-	// hasher := md5.New()
-	// hasher.Write([]byte(password))
-	// encryptedPassword := hex.EncodeToString(hasher.Sum(nil))
+	hasher := md5.New()
+	hasher.Write([]byte(password))
+	encryptedPassword := hex.EncodeToString(hasher.Sum(nil))
 
 	// Query
-	row := db.QueryRow("SELECT user_type FROM users WHERE email=? AND password=?", email, password)
+	row := db.QueryRow("SELECT user_type FROM users WHERE email=? AND password=?", email, encryptedPassword)
 	var userType int
 	if err := row.Scan(&userType); err != nil {
 		SendErrorResponse(w, 400)
@@ -50,7 +50,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	} else {
 
 		if userType == 2 {
-			row := db.QueryRow("SELECT * FROM users WHERE email=? AND password=?", email, password)
+			row := db.QueryRow("SELECT * FROM users WHERE email=? AND password=?", email, encryptedPassword)
 			var partner models.Partner
 			if err := row.Scan(&partner.ID, &partner.Fullname, &partner.Username, &partner.Email, &partner.Password, &partner.Address, &partner.UserType, &partner.PartnerType, &partner.CompanyName, &partner.DateCreated); err != nil {
 				SendErrorResponse(w, 400)
@@ -399,3 +399,49 @@ func GetFlightList(w http.ResponseWriter, r *http.Request) {
 // 	json.NewEncoder(w).Encode(response)
 // 	db.Close()
 // }
+
+func GetTourList(w http.ResponseWriter, r *http.Request) {
+
+	// // Connect to database
+	// db := Connect()
+	// defer db.Close()
+
+	// // Get value from query params
+	// vars := mux.Vars(r)
+	// departureCity := vars["departureCity"]
+	// destinationCity := vars["destinationCity"]
+	// departureDate := vars["departureDate"]
+	// seatType := vars["seatType"]
+
+	// query := `SELECT * FROM flights` +
+	// 	`JOIN airplanes`
+
+	// rows, errQuery := db.Query(query, departureCity, destinationCity, departureDate, seatType)
+
+	// var tour models.Tours
+	// var tours []models.Tours
+
+	// for rows.Next() {
+	// 	if err := rows.Scan(&flight.ID, &flight.AirplaneID, &flight.DepartureAirport, &flight.DestinationAirport, &flight.FlightType, &flight.FlightNumber, &flight.DepartureTime, &flight.ArrivalTime, &flight.DepartureDate, &flight.ArrivalDate, &flight.TravelTime); err != nil {
+	// 		log.Println(err.Error())
+	// 	} else {
+	// 		flights = append(flights, flight)
+	// 	}
+	// }
+
+	// var response models.FlightsResponse
+	// if errQuery == nil {
+	// 	if len(flights) == 0 {
+	// 		SendErrorResponse(w, 400)
+	// 	} else {
+	// 		response.Status = 200
+	// 		response.Message = "Success Get Data"
+	// 		response.Data = flights
+	// 	}
+	// } else {
+	// 	SendErrorResponse(w, 400)
+	// }
+	// w.Header().Set("Content-Type", "application/json")
+	// json.NewEncoder(w).Encode(response)
+	// db.Close()
+}
