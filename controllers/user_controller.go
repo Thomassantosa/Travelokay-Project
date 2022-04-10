@@ -1,6 +1,8 @@
 package controllers
 
 import (
+	"crypto/md5"
+	"encoding/hex"
 	"net/http"
 	"strconv"
 )
@@ -21,6 +23,10 @@ func UpdateUser(w http.ResponseWriter, r *http.Request) {
 	email := r.Form.Get("email")
 	password := r.Form.Get("password")
 	// encrypt password
+	hasher := md5.New()
+	hasher.Write([]byte(password))
+	encryptedPassword := hex.EncodeToString(hasher.Sum(nil))
+
 	address := r.Form.Get("address")
 
 	// Query
@@ -35,8 +41,8 @@ func UpdateUser(w http.ResponseWriter, r *http.Request) {
 	if email != "" {
 		query += " email = '" + email + "',"
 	}
-	if password != "" {
-		query += " password = '" + password + "',"
+	if encryptedPassword != "" {
+		query += " password = '" + encryptedPassword + "',"
 	}
 	if address != "" {
 		query += " address = '" + address + "',"
