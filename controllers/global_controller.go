@@ -402,46 +402,92 @@ func GetFlightList(w http.ResponseWriter, r *http.Request) {
 
 func GetTourList(w http.ResponseWriter, r *http.Request) {
 
-	// // Connect to database
-	// db := Connect()
-	// defer db.Close()
+	// Connect to database
+	db := Connect()
+	defer db.Close()
 
-	// // Get value from query params
-	// vars := mux.Vars(r)
-	// departureCity := vars["departureCity"]
-	// destinationCity := vars["destinationCity"]
-	// departureDate := vars["departureDate"]
-	// seatType := vars["seatType"]
+	// Get value from query params
+	vars := mux.Vars(r)
+	departureCity := vars["departureCity"]
+	destinationCity := vars["destinationCity"]
+	departureDate := vars["departureDate"]
+	seatType := vars["seatType"]
 
-	// query := `SELECT * FROM flights` +
-	// 	`JOIN airplanes`
+	query := `SELECT * FROM flights` +
+		`JOIN airplanes`
 
-	// rows, errQuery := db.Query(query, departureCity, destinationCity, departureDate, seatType)
+	rows, errQuery := db.Query(query, departureCity, destinationCity, departureDate, seatType)
 
-	// var tour models.Tours
-	// var tours []models.Tours
+	var tour models.Tours
+	var tours []models.Tours
 
-	// for rows.Next() {
-	// 	if err := rows.Scan(&flight.ID, &flight.AirplaneID, &flight.DepartureAirport, &flight.DestinationAirport, &flight.FlightType, &flight.FlightNumber, &flight.DepartureTime, &flight.ArrivalTime, &flight.DepartureDate, &flight.ArrivalDate, &flight.TravelTime); err != nil {
-	// 		log.Println(err.Error())
-	// 	} else {
-	// 		flights = append(flights, flight)
-	// 	}
-	// }
+	for rows.Next() {
+		if err := rows.Scan(&tour.ID, &tour.TourName, &tour.TourRating, &tour.TourReview, &tour.TourDesc, &tour.TourFacility, &tour.TourAddress, &tour.TourCity, &tour.TourProvince, &tour.TourCountry); err != nil {
+			log.Println(err.Error())
+		} else {
+			tours = append(tours, tour)
+		}
+	}
 
-	// var response models.FlightsResponse
-	// if errQuery == nil {
-	// 	if len(flights) == 0 {
-	// 		SendErrorResponse(w, 400)
-	// 	} else {
-	// 		response.Status = 200
-	// 		response.Message = "Success Get Data"
-	// 		response.Data = flights
-	// 	}
-	// } else {
-	// 	SendErrorResponse(w, 400)
-	// }
-	// w.Header().Set("Content-Type", "application/json")
-	// json.NewEncoder(w).Encode(response)
-	// db.Close()
+	var response models.ToursResponse
+	if errQuery == nil {
+		if len(tours) == 0 {
+			SendErrorResponse(w, 400)
+		} else {
+			response.Status = 200
+			response.Message = "Success Get Data"
+			response.Data = tours
+		}
+	} else {
+		SendErrorResponse(w, 400)
+	}
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(response)
+	db.Close()
+}
+
+func GetTourScheduleList(w http.ResponseWriter, r *http.Request) {
+
+	// Connect to database
+	db := Connect()
+	defer db.Close()
+
+	// Get value from query params
+	vars := mux.Vars(r)
+	departureCity := vars["departureCity"]
+	destinationCity := vars["destinationCity"]
+	departureDate := vars["departureDate"]
+	seatType := vars["seatType"]
+
+	query := `SELECT * FROM flights` +
+		`JOIN airplanes`
+
+	rows, errQuery := db.Query(query, departureCity, destinationCity, departureDate, seatType)
+
+	var tour models.ToursSchedule
+	var tours []models.ToursSchedule
+
+	for rows.Next() {
+		if err := rows.Scan(&tour.ID, &tour.TourID, &tour.ScheduleDay, &tour.OpenTime, &tour.CloseTime, &tour.Price); err != nil {
+			log.Println(err.Error())
+		} else {
+			tours = append(tours, tour)
+		}
+	}
+
+	var response models.ToursScheduleResponse
+	if errQuery == nil {
+		if len(tours) == 0 {
+			SendErrorResponse(w, 400)
+		} else {
+			response.Status = 200
+			response.Message = "Success Get Data"
+			response.Data = tours
+		}
+	} else {
+		SendErrorResponse(w, 400)
+	}
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(response)
+	db.Close()
 }
