@@ -104,7 +104,7 @@ type Tours struct {
 
 type ToursSchedule struct {
 	ID          int `json:"schedule_id"`
-	TourName    int `json:"tour_id"`
+	TourID      int `json:"tour_id"`
 	ScheduleDay int `json:"schedule_day"`
 	OpenTime    int `json:"opentime"`
 	CloseTime   int `json:"closetime"`
@@ -197,4 +197,14 @@ type TrainsResponse struct {
 	Status  int         `json:"status"`
 	Message string      `json:"message"`
 	Data    []Traintrip `json:"data"`
+}
+type ToursResponse struct {
+	Status  int     `json:"status"`
+	Message string  `json:"message"`
+	Data    []Tours `json:"data"`
+}
+type ToursScheduleResponse struct {
+	Status  int             `json:"status"`
+	Message string          `json:"message"`
+	Data    []ToursSchedule `json:"data"`
 }
