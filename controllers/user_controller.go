@@ -71,3 +71,15 @@ func AddNewBusOrder(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 }
+
+func AddNewTrainOrder(w http.ResponseWriter, r *http.Request) {
+	// Connect to database
+	db := Connect()
+	defer db.Close()
+
+	// Get value from form
+	err := r.ParseForm()
+	if err != nil {
+		return
+	}
+}
