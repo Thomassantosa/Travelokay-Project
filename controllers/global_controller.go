@@ -9,6 +9,7 @@ import (
 	"os"
 
 	models "github.com/Travelokay-Project/models"
+	"github.com/gorilla/mux"
 	"github.com/joho/godotenv"
 )
 
