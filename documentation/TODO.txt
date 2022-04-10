@@ -17,17 +17,17 @@
 | 2  | /logout	        | All		    | GET		    | done      |
 | 3  | /user		        | All		    | POST		  | done      |
 | 4  | /user		        | User		  | PUT		    | done      |
-| 5  | /user/hotel	    | All		    | GET		    |           |
-| 6  | /user/hotel/room | All		    | GET		    |           |
-| 7  | /user/hotel/room | User		  | POST		  |           |
-| 8  | /user/flight	    | All		    | GET		    |           |
-| 9  | /user/flight	    | User		  | POST		  |           |
-| 10 | /user/bus 	      | All		    | GET		    |           |
-| 11 | /user/bus 	      | User		  | POST		  |           |
-| 12 | /user/train	    | All		    | GET		    |           |
-| 13 | /user/train	    | User		  | POST		  |           |
-| 14 | /user/tour	      | All		    | GET		    |           |
-| 15 | /user/tour	      | User		  | POST		  |           |
+| 5  | /user/hotel	    | All		    | GET		    |ON PROGRESS|
+| 6  | /user/hotel/room | All		    | GET		    |ON PROGRESS|
+| 7  | /user/hotel/room | User		  | POST		  |ON PROGRESS|
+| 8  | /user/flight	    | All		    | GET		    |ON PROGRESS|
+| 9  | /user/flight	    | User		  | POST		  |ON PROGRESS|
+| 10 | /user/bus 	      | All		    | GET		    |ON PROGRESS|
+| 11 | /user/bus 	      | User		  | POST		  |ON PROGRESS|
+| 12 | /user/train	    | All		    | GET		    |ON PROGRESS|
+| 13 | /user/train	    | User		  | POST		  |ON PROGRESS|
+| 14 | /user/tour	      | All		    | GET		    |ON PROGRESS|
+| 15 | /user/tour	      | User		  | POST		  |ON PROGRESS|
 | 16 | /user/order	    | User		  | GET		    |           |
 | 17 | /user/order 	    | User		  | DELETE	  |           |
 | 18 | /partner	        | All		    | POST		  | done      |
