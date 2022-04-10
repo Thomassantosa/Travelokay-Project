@@ -9,6 +9,7 @@ import (
 	"os"
 
 	models "github.com/Travelokay-Project/models"
+	"github.com/gorilla/mux"
 	"github.com/joho/godotenv"
 )
 
@@ -535,16 +536,13 @@ func GetTourList(w http.ResponseWriter, r *http.Request) {
 
 	// Get value from query params
 	vars := mux.Vars(r)
-	departureCity := vars["departureCity"]
-	destinationCity := vars["destinationCity"]
-	departureDate := vars["departureDate"]
-	seatType := vars["seatType"]
+	tourName := vars["tourName"]
+	tourCity := vars["tourCity"]
+	tourCountry := vars["tourCountry"]
 
-	query := `SELECT * FROM flights` +
-		`JOIN airplanes`
+	query := `SELECT * FROM tours`
 
-	rows, errQuery := db.Query(query, departureCity, destinationCity, departureDate, seatType)
-
+	rows, errQuery := db.Query(query, tourName, tourCity, tourCountry)
 	var tour models.Tours
 	var tours []models.Tours
 
@@ -581,15 +579,15 @@ func GetTourScheduleList(w http.ResponseWriter, r *http.Request) {
 
 	// Get value from query params
 	vars := mux.Vars(r)
-	departureCity := vars["departureCity"]
-	destinationCity := vars["destinationCity"]
-	departureDate := vars["departureDate"]
-	seatType := vars["seatType"]
+	scheduleDay := vars["scheduleDay"]
+	openTime := vars["openTime"]
+	closeTime := vars["closeTime"]
+	price := vars["price"]
 
 	query := `SELECT * FROM flights` +
 		`JOIN airplanes`
 
-	rows, errQuery := db.Query(query, departureCity, destinationCity, departureDate, seatType)
+	rows, errQuery := db.Query(query, scheduleDay, openTime, closeTime, price)
 
 	var tour models.ToursSchedule
 	var tours []models.ToursSchedule
