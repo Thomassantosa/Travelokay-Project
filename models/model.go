@@ -24,6 +24,36 @@ type Partner struct {
 	DateCreated string `json:"date_created"`
 }
 
+type Flight struct {
+	ID                 int     `json:"flight_id"`
+	AirplaneModel      string  `json:"airplane_model"`
+	AirlineName        string  `json:"airline_name"`
+	DepartureAirport   Airport `json:"departure_airport"`
+	DestinationAirport Airport `json:"destination_airport"`
+	FlightType         string  `json:"flight_type"`
+	FlightNumber       string  `json:"flight_number"`
+	DepartureTime      string  `json:"departure_time"`
+	ArrivalTime        string  `json:"arrival_time"`
+	TravelTime         int     `json:"travel_time"`
+}
+
+type Airport struct {
+	ID      int    `json:"airport_id"`
+	Code    string `json:"airport_code"`
+	Name    string `json:"airport_name"`
+	City    string `json:"airport_city"`
+	Country string `json:"airport_country"`
+}
+
+type Seat struct {
+	ID              int    `json:"seat_id"`
+	SeatType        string `json:"seat_type"`
+	SeatName        string `json:"seat_name"`
+	SeatStatus      int    `json:"seat_status"`
+	BaggageCapacity int    `json:"baggage_capacity"`
+	SeatPrice       int    `json:"seat_price"`
+}
+
 type Hotel struct {
 	ID            int    `json:"hotel_id"`
 	HotelName     string `json:"hotel_name"`
@@ -47,20 +77,6 @@ type Room struct {
 	RoomStatus   int    `json:"room_status"`
 	CheckIn      string `json:"checkin"`
 	CheckOut     string `json:"checkout"`
-}
-
-type Flight struct {
-	ID                 int    `json:"flight_id"`
-	AirplaneID         int    `json:"airplane_id"`
-	DepartureAirport   int    `json:"departure_airport"`
-	DestinationAirport int    `json:"destination_airport"`
-	FlightType         string `json:"flight_type"`
-	FlightNumber       string `json:"flight_number"`
-	DepartureTime      string `json:"departure_time"`
-	DepartureDate      string `json:"departure_date"`
-	ArrivalTime        string `json:"arrival_time"`
-	ArrivalDate        string `json:"arrival_date"`
-	TravelTime         int    `json:"travel_time"`
 }
 
 type Bustrip struct {
@@ -198,13 +214,21 @@ type TrainsResponse struct {
 	Message string      `json:"message"`
 	Data    []Traintrip `json:"data"`
 }
+
 type ToursResponse struct {
 	Status  int     `json:"status"`
 	Message string  `json:"message"`
 	Data    []Tours `json:"data"`
 }
+
 type ToursScheduleResponse struct {
 	Status  int             `json:"status"`
 	Message string          `json:"message"`
 	Data    []ToursSchedule `json:"data"`
+}
+
+type SeatsResponse struct {
+	Status  int    `json:"status"`
+	Message string `json:"message"`
+	Data    []Seat `json:"data"`
 }

@@ -9,7 +9,6 @@ import (
 	"os"
 
 	models "github.com/Travelokay-Project/models"
-	"github.com/gorilla/mux"
 	"github.com/joho/godotenv"
 )
 
@@ -105,7 +104,7 @@ func AddNewUser(w http.ResponseWriter, r *http.Request) {
 	// Get value from form
 	err := r.ParseForm()
 	if err != nil {
-		return
+		log.Println(err)
 	}
 	fullname := r.Form.Get("fullname")
 	username := r.Form.Get("username")
@@ -137,7 +136,7 @@ func AddNewPartner(w http.ResponseWriter, r *http.Request) {
 	// Get value from form
 	err := r.ParseForm()
 	if err != nil {
-		return
+		log.Println(err)
 	}
 	fullname := r.Form.Get("fullname")
 	username := r.Form.Get("username")
@@ -273,29 +272,60 @@ func AddNewPartner(w http.ResponseWriter, r *http.Request) {
 // }
 
 func GetFlightList(w http.ResponseWriter, r *http.Request) {
+	log.Println("A")
 
 	// Connect to database
 	db := Connect()
 	defer db.Close()
 
 	// Get value from query params
-	vars := mux.Vars(r)
-	departureCity := vars["departureCity"]
-	destinationCity := vars["destinationCity"]
-	departureDate := vars["departureDate"]
-	seatType := vars["seatType"]
+	departureCity := r.URL.Query().Get("departureCity")
+	destinationCity := r.URL.Query().Get("destinationCity")
+	seatType := r.URL.Query().Get("seatType")
+	// destinationCity := r.URL.Query().Get("destinationCity")
+	log.Println(departureCity)
+	log.Println(destinationCity)
+	log.Println(seatType)
 
-	query := `SELECT * FROM flights` +
-		`JOIN airplanes`
+	query :=
+		`SELECT flights.flight_id, airplanes.airplane_model, airlines.airline_name, airportA.airport_id, airportA.airport_code,` +
+			` airportA.airport_name, airportA.airport_city, airportA.airport_country, airportB.airport_id, airportB.airport_code,` +
+			` airportB.airport_name, airportB.airport_city, airportB.airport_country, flight_type, flight_number, departure_time,` +
+			` arrival_time, travel_time FROM flights` +
+			` JOIN airplanes ON flights.airplane_id = airplanes.airplane_id` +
+			` JOIN airlines ON airplanes.airline_id = airlines.airline_id` +
+			` JOIN airports AS airportA ON flights.departure_airport = airportA.airport_id` +
+			` JOIN airports AS airportB ON flights.destination_airport = airportB.airport_id` +
+			` JOIN seats ON flights.flight_id = seats.flight_id` +
+			` WHERE airportA.airport_city = ? AND` +
+			` airportB.airport_city = ? AND` +
+			// ` CONVERT(DATE, GETDATE()) flights.departure_time` +
+			// ` CONVERT(flights.departure_time, GETDATE()) = ? AND` +
+			` seats.seat_type = ?` +
+			` GROUP BY flights.flight_id`
 
-	rows, errQuery := db.Query(query, departureCity, destinationCity, departureDate, seatType)
+	// rows, errQuery := db.Query(query, departureCity, destinationCity, departureDate, seatType)
+	rows, errQuery := db.Query(query, departureCity, destinationCity, seatType)
+
+	if errQuery != nil {
+		SendErrorResponse(w, 500)
+		log.Println(errQuery)
+		return
+	}
 
 	var flight models.Flight
 	var flights []models.Flight
 
 	for rows.Next() {
-		if err := rows.Scan(&flight.ID, &flight.AirplaneID, &flight.DepartureAirport, &flight.DestinationAirport, &flight.FlightType, &flight.FlightNumber, &flight.DepartureTime, &flight.ArrivalTime, &flight.DepartureDate, &flight.ArrivalDate, &flight.TravelTime); err != nil {
-			log.Println(err.Error())
+		err := rows.Scan(&flight.ID, &flight.AirplaneModel, &flight.AirlineName, &flight.DepartureAirport.ID, &flight.DepartureAirport.Code,
+			&flight.DepartureAirport.Name, &flight.DepartureAirport.City, &flight.DepartureAirport.Country, &flight.DestinationAirport.ID,
+			&flight.DestinationAirport.Code, &flight.DestinationAirport.Name, &flight.DestinationAirport.City,
+			&flight.DestinationAirport.Country, &flight.FlightType, &flight.FlightNumber, &flight.DepartureTime, &flight.ArrivalTime,
+			&flight.TravelTime)
+		if err != nil {
+			SendErrorResponse(w, 500)
+			log.Println(err)
+			return
 		} else {
 			flights = append(flights, flight)
 		}
@@ -305,17 +335,114 @@ func GetFlightList(w http.ResponseWriter, r *http.Request) {
 	if errQuery == nil {
 		if len(flights) == 0 {
 			SendErrorResponse(w, 400)
+			return
 		} else {
 			response.Status = 200
-			response.Message = "Success Get Data"
+			response.Message = "Get Data Success"
 			response.Data = flights
+		}
+	} else {
+		SendErrorResponse(w, 400)
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(response)
+}
+
+func GetFlightSeatList(w http.ResponseWriter, r *http.Request) {
+
+	// Connect to database
+	db := Connect()
+	defer db.Close()
+
+	// Get value from query params
+	flightId := r.URL.Query().Get("flightId")
+	seatType := r.URL.Query().Get("seatType")
+
+	query :=
+		`SELECT seat_id, seat_type, seat_name, seat_status, baggage_capacity, seat_price FROM seats` +
+			` WHERE flight_id = ? AND` +
+			` seat_type = ? AND` +
+			` seat_status = 0`
+
+	rows, errQuery := db.Query(query, flightId, seatType)
+
+	if errQuery != nil {
+		SendErrorResponse(w, 500)
+		log.Println(errQuery)
+		return
+	}
+
+	var seat models.Seat
+	var seats []models.Seat
+
+	for rows.Next() {
+		err := rows.Scan(&seat.ID, &seat.SeatType, &seat.SeatName, &seat.SeatStatus, &seat.BaggageCapacity, &seat.SeatPrice)
+		if err != nil {
+			SendErrorResponse(w, 500)
+			log.Println(err)
+			return
+		} else {
+			seats = append(seats, seat)
+		}
+	}
+
+	var response models.SeatsResponse
+	if errQuery == nil {
+		if len(seats) == 0 {
+			SendErrorResponse(w, 400)
+			return
+		} else {
+			response.Status = 200
+			response.Message = "Get Data Success"
+			response.Data = seats
 		}
 	} else {
 		SendErrorResponse(w, 400)
 	}
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(response)
-	db.Close()
+}
+
+func AddNewFlightOrder(w http.ResponseWriter, r *http.Request) {
+
+	log.Println("A")
+
+	// Connect to database
+	db := Connect()
+	defer db.Close()
+
+	// Get value from form
+	err := r.ParseForm()
+	if err != nil {
+		log.Println("B")
+		SendErrorResponse(w, 500)
+		log.Println(err)
+		return
+	}
+	userId := GetIdFromCookie(r)
+	seatId := r.Form.Get("seatId")
+	transactionType := r.Form.Get("transactionType")
+
+	// Query order & update seat_status
+	_, errQuery1 := db.Exec("INSERT INTO orders(user_id, seat_id, transaction_type) values (?,?,?)", userId, seatId, transactionType)
+	_, errQuery2 := db.Exec("UPDATE seats SET seat_status = 1 WHERE seat_id = ", seatId)
+
+	if errQuery1 == nil && errQuery2 == nil {
+		SendSuccessResponse(w)
+	} else if errQuery1 != nil {
+		log.Println("C")
+		log.Println(errQuery1)
+		SendErrorResponse(w, 400)
+		return
+	} else {
+		log.Println("D")
+		log.Println(errQuery2)
+		SendErrorResponse(w, 400)
+		return
+
+	}
+
 }
 
 // func GetBusList(w http.ResponseWriter, r *http.Request) {
