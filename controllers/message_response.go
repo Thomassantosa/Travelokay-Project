@@ -28,6 +28,8 @@ func SendErrorResponse(w http.ResponseWriter, errCode int) {
 		response.Message = "Internal server error"
 	case 400:
 		response.Message = "Bad Request"
+	case 401:
+		response.Message = "UnAuthorized Access"
 	default:
 		response.Message = "Undeclared Error"
 	}

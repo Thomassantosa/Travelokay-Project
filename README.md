@@ -8,7 +8,7 @@
 | 4  | /user		    | User		| PUT		| UpdateUser	            | MessageResponse                   | -                                                                                                     |
 | 5  | /user/hotel	    | All		| GET		| GetHotelList              | HotelsResponse                    | -                                                                                                     |
 | 6  | /user/hotel/room | All		| GET		| GetRoomList               | RoomsResponse                     | -                                                                                                     |
-| 7  | /user/hotel/room | User		| POST		| AddNewRoomOrder          | HotelOrderResponse                | Trigger update tabel rooms.                                                                           |
+| 7  | /user/hotel/room | User		| POST		| AddNewRoomOrder           | HotelOrderResponse                | Trigger update tabel rooms.                                                                           |
 | 8  | /user/flight	    | All		| GET		| GetFlightList             | FlightsResponse                   | -                                                                                                     |
 | 9  | /user/flight	    | User		| POST		| AddNewFlightOrder         | FlightOrderResponse               | Trigger update tabel seats.                                                                           |
 | 10 | /user/bus 	    | All		| GET		| GetBusList                | BusTripsResponse                  | -                                                                                                     |
