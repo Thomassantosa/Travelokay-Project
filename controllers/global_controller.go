@@ -227,13 +227,11 @@ func AddNewHotelOrder(w http.ResponseWriter, r *http.Request) {
 	}
 	userID := r.Form.Get("user_id")
 	roomID := r.Form.Get("room_id")
-	email := r.Form.Get("email")
-	phoneNumber := r.Form.Get("phone_number")
-	transactionType := r.Form.Get("transaction_type")
-	personName := r.Form.Get("person_name")
+	orderStatus := r.Form.Get("order_status")
 	orderDate := r.Form.Get("order_date")
+	transactionType := r.Form.Get("transaction_type")
 
-	_, errQuery := db.Exec("INSERT INTO orders(user_id,room_id,order_date,person_name,phone_number,email,transaction_type) values (?,?,?,?,?,?,?)", userID, roomID, orderDate, personName, phoneNumber, email, transactionType)
+	_, errQuery := db.Exec("INSERT INTO orders(user_id,room_id,order_date,person_name,phone_number,order_status,transaction_type) values (?,?,?,?,?)", userID, roomID, orderDate, orderStatus, transactionType)
 
 	if errQuery == nil {
 		SendSuccessResponse(w)
