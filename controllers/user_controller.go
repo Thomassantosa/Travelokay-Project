@@ -1,13 +1,13 @@
 package controllers
 
 import (
-	"log"
 	"net/http"
+	"strconv"
 )
 
-func UpdateUsers(w http.ResponseWriter, r *http.Request) {
+func UpdateUser(w http.ResponseWriter, r *http.Request) {
 
-	// connect to database
+	// Connect to database
 	db := Connect()
 	defer db.Close()
 
@@ -20,41 +20,36 @@ func UpdateUsers(w http.ResponseWriter, r *http.Request) {
 	username := r.Form.Get("username")
 	email := r.Form.Get("email")
 	password := r.Form.Get("password")
+	// encrypt password
 	address := r.Form.Get("address")
 
 	// Query
 	query := "UPDATE users SET"
 
 	if fullname != "" {
-		query += " fullname='" + fullname + "',"
+		query += " fullname = '" + fullname + "',"
 	}
 	if username != "" {
-		query += " username='" + username + "',"
+		query += " username = '" + username + "',"
 	}
 	if email != "" {
-		query += " email='" + email + ","
+		query += " email = '" + email + "',"
 	}
 	if password != "" {
-		query += " password=" + password + ","
+		query += " password = '" + password + "',"
 	}
 	if address != "" {
-		query += " address=" + address + ","
+		query += " address = '" + address + "',"
 	}
 	queryNew := query[:len(query)-1] // Delete last coma
-	queryNew += " WHERE email=" + email + "'"
+	userId := GetIdFromCookie(r)
+	queryNew += " WHERE user_id = " + strconv.Itoa(userId)
 
-	result, errQuery := db.Exec(queryNew)
+	_, errQuery := db.Exec(queryNew)
 
-	num, _ := result.RowsAffected()
-
-	if errQuery == nil {
-		if num == 0 {
-			SendErrorResponse(w, 400)
-		} else {
-			SendSuccessResponse(w)
-			log.Println(email)
-		}
-	} else {
+	if errQuery != nil {
 		SendErrorResponse(w, 400)
+	} else {
+		SendSuccessResponse(w)
 	}
 }

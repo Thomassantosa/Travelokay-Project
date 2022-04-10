@@ -1,13 +1,11 @@
 package controllers
 
 import (
-	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
 	"time"
 
-	models "github.com/Travelokay-Project/models"
 	"github.com/golang-jwt/jwt/v4"
 )
 
@@ -63,21 +61,11 @@ func ResetUserToken(w http.ResponseWriter) {
 	})
 }
 
-func SendUnAuthorizedResponse(w http.ResponseWriter) {
-	// success response
-	var response models.MessageResponse
-	response.Status = 401
-	response.Message = "UnAuthorized Access"
-
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(response)
-}
-
 func Authenticate(next http.HandlerFunc, accessType int) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		isValidToken := ValidateUserToken(r, accessType)
 		if !isValidToken {
-			SendUnAuthorizedResponse(w)
+			SendErrorResponse(w, 401)
 		} else {
 			next.ServeHTTP(w, r)
 		}
@@ -117,4 +105,25 @@ func ValidateTokenFormCookies(r *http.Request) (bool, int, string, int) {
 		log.Println(err1)
 	}
 	return false, -1, "", -1
+}
+
+func GetIdFromCookie(r *http.Request) int {
+
+	cookie, err1 := r.Cookie(tokenName)
+	if err1 == nil {
+		accessToken := cookie.Value
+		accessClaims := &Claims{}
+		parsedToken, err2 := jwt.ParseWithClaims(accessToken, accessClaims, func(accessToken *jwt.Token) (interface{}, error) {
+			return jwtKey, nil
+		})
+
+		if err2 == nil && parsedToken.Valid {
+			return accessClaims.ID
+		} else {
+			log.Println(err2)
+		}
+	} else {
+		log.Println(err1)
+	}
+	return -1
 }
