@@ -30,9 +30,9 @@
 | 15 | /user/tourSchedule| All		  | GET		    | testing   |
 | 16 | /user/tour	      | User		  | POST		  |ON PROGRESS|
 | 17 | /user/order	    | User		  | GET		    |           |
-| 18 | /user/order 	    | User		  | DELETE	  |           |
+| 18 | /user/order 	    | User		  | PUT	      |           |
 | 19 | /partner	        | All		    | POST		  | done      |
-| 20 | /partner	        | Partner	  | PUT		    |           |
+| 20 | /partner	        | Partner	  | PUT		    | done      |
 | 21 | /partner/flight  | Partner	  | GET		    |           |
 | 22 | /partner/flight  | Partner	  | POST  	  |           |
 | 23 | /partner/flight  | Partner	  | DELETE	  |           |

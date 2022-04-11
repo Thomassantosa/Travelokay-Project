@@ -37,3 +37,14 @@ func SendErrorResponse(w http.ResponseWriter, errCode int) {
 	w.WriteHeader(errCode)
 	json.NewEncoder(w).Encode(response)
 }
+
+func SendMessageOnlyResponse(w http.ResponseWriter, message string) {
+
+	// success response
+	response := models.MessageResponse{}
+	response.Status = 200
+	response.Message = message
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(response)
+}

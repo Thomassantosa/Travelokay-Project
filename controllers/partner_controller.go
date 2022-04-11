@@ -22,6 +22,7 @@ func UpdatePartner(w http.ResponseWriter, r *http.Request) {
 	username := r.Form.Get("username")
 	email := r.Form.Get("email")
 	password := r.Form.Get("password")
+
 	// encrypt password
 	hasher := md5.New()
 	hasher.Write([]byte(password))

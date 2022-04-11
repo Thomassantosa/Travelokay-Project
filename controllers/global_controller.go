@@ -36,12 +36,12 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	password := r.FormValue("password")
 
 	// Encrypt password
-	hasher := md5.New()
-	hasher.Write([]byte(password))
-	encryptedPassword := hex.EncodeToString(hasher.Sum(nil))
+	// hasher := md5.New()
+	// hasher.Write([]byte(password))
+	// encryptedPassword := hex.EncodeToString(hasher.Sum(nil))
 
 	// Query
-	row := db.QueryRow("SELECT user_type FROM users WHERE email=? AND password=?", email, encryptedPassword)
+	row := db.QueryRow("SELECT user_type FROM users WHERE email=? AND password=?", email, password)
 	var userType int
 	if err := row.Scan(&userType); err != nil {
 		SendErrorResponse(w, 400)
@@ -50,7 +50,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	} else {
 
 		if userType == 2 {
-			row := db.QueryRow("SELECT * FROM users WHERE email=? AND password=?", email, encryptedPassword)
+			row := db.QueryRow("SELECT * FROM users WHERE email=? AND password=?", email, password)
 			var partner models.Partner
 			if err := row.Scan(&partner.ID, &partner.Fullname, &partner.Username, &partner.Email, &partner.Password, &partner.Address, &partner.UserType, &partner.PartnerType, &partner.CompanyName, &partner.DateCreated); err != nil {
 				SendErrorResponse(w, 400)
@@ -273,7 +273,6 @@ func AddNewPartner(w http.ResponseWriter, r *http.Request) {
 // }
 
 func GetFlightList(w http.ResponseWriter, r *http.Request) {
-	log.Println("A")
 
 	// Connect to database
 	db := Connect()
@@ -283,10 +282,7 @@ func GetFlightList(w http.ResponseWriter, r *http.Request) {
 	departureCity := r.URL.Query().Get("departureCity")
 	destinationCity := r.URL.Query().Get("destinationCity")
 	seatType := r.URL.Query().Get("seatType")
-	// destinationCity := r.URL.Query().Get("destinationCity")
-	log.Println(departureCity)
-	log.Println(destinationCity)
-	log.Println(seatType)
+	departureDate := r.URL.Query().Get("departureDate")
 
 	query :=
 		`SELECT flights.flight_id, airplanes.airplane_model, airlines.airline_name, airportA.airport_id, airportA.airport_code,` +
@@ -300,13 +296,12 @@ func GetFlightList(w http.ResponseWriter, r *http.Request) {
 			` JOIN seats ON flights.flight_id = seats.flight_id` +
 			` WHERE airportA.airport_city = ? AND` +
 			` airportB.airport_city = ? AND` +
-			// ` CONVERT(DATE, GETDATE()) flights.departure_time` +
-			// ` CONVERT(flights.departure_time, GETDATE()) = ? AND` +
+			` CAST(departure_time AS DATE) = ? AND` +
 			` seats.seat_type = ?` +
 			` GROUP BY flights.flight_id`
 
 	// rows, errQuery := db.Query(query, departureCity, destinationCity, departureDate, seatType)
-	rows, errQuery := db.Query(query, departureCity, destinationCity, seatType)
+	rows, errQuery := db.Query(query, departureCity, destinationCity, departureDate, seatType)
 
 	if errQuery != nil {
 		SendErrorResponse(w, 500)

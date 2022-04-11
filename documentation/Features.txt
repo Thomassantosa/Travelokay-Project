@@ -2,6 +2,7 @@
 
 [Mandatory]
 1) CORS
+    ->
 2) ENV
     -> database name, database port, server port, jwt key, email & password
 3) Authentication JWT
@@ -12,6 +13,7 @@
     -> Goroutine    : Proses query & pengiriman email dilakukan bersamaan
 
 5) Github Action
+    -> ?
 
 [Optional]
 1) GORM
