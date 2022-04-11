@@ -7,6 +7,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strconv"
 
 	models "github.com/Travelokay-Project/models"
 	"github.com/gorilla/mux"
@@ -162,87 +163,88 @@ func AddNewPartner(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// func GetHotelList(w http.ResponseWriter, r *http.Request) {
-// 	db := Connect()
-// 	defer db.Close()
+func GetHotelList(w http.ResponseWriter, r *http.Request) {
+	db := Connect()
+	defer db.Close()
 
-// 	err := r.ParseForm()
-// 	if err != nil {
-// 		return
-// 	}
+	err := r.ParseForm()
+	if err != nil {
+		return
+	}
 
-// 	hotelCity := r.Form.Get("hotel_city")
+	hotelCity := r.Form.Get("hotel_city")
 
-// 	rows, errQuery := db.Query("SELECT * FROM hotels WHERE hotel_city=?", hotelCity)
+	rows, errQuery := db.Query("SELECT * FROM hotels WHERE hotel_city=?", hotelCity)
 
-// 	var hotel models.Hotel
-// 	var hotels []models.Hotel
+	var hotel models.Hotel
+	var hotels []models.Hotel
 
-// 	for rows.Next() {
-// 		if err := rows.Scan(&hotel.ID, &hotel.HotelName, &hotel.HotelStar, &hotel.HotelReview, &hotel.HotelRating, &hotel.HotelAddress, &hotel.HotelFacility, &hotel.HotelCity, &hotel.HotelCountry); err != nil {
-// 			log.Println(err.Error())
-// 		} else {
-// 			hotels = append(hotels, hotel)
-// 		}
-// 	}
+	for rows.Next() {
+		if err := rows.Scan(&hotel.ID, &hotel.HotelName, &hotel.HotelStar, &hotel.HotelReview, &hotel.HotelRating, &hotel.HotelAddress, &hotel.HotelFacility, &hotel.HotelCity, &hotel.HotelCountry); err != nil {
+			log.Println(err.Error())
+		} else {
+			hotels = append(hotels, hotel)
+		}
+	}
 
-// 	var response models.HotelsResponse
-// 	if errQuery == nil {
-// 		if len(hotels) == 0 {
-// 			SendErrorResponse(w, 400)
-// 		} else {
-// 			response.Status = 200
-// 			response.Message = "Success Get Data"
-// 			response.Data = hotels
-// 		}
-// 	} else {
-// 		SendErrorResponse(w, 400)
-// 	}
-// 	w.Header().Set("Content-Type", "application/json")
-// 	json.NewEncoder(w).Encode(response)
-// 	db.Close()
-// }
+	var response models.HotelsResponse
+	if errQuery == nil {
+		if len(hotels) == 0 {
+			SendErrorResponse(w, 400)
+		} else {
+			response.Status = 200
+			response.Message = "Success Get Data"
+			response.Data = hotels
+		}
+	} else {
+		SendErrorResponse(w, 400)
+	}
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(response)
+	db.Close()
+}
 
-// func GetRoomList(w http.ResponseWriter, r *http.Request) {
-// 	db := Connect()
-// 	defer db.Close()
+func GetRoomList(w http.ResponseWriter, r *http.Request) {
+	db := Connect()
+	defer db.Close()
 
-// 	err := r.ParseForm()
-// 	if err != nil {
-// 		return
-// 	}
+	err := r.ParseForm()
+	if err != nil {
+		return
+	}
 
-// 	hotelID, _ := strconv.Atoi(r.Form.Get("hotel_id"))
+	hotelID, _ := strconv.Atoi(r.Form.Get("hotel_id"))
 
-// 	rows, errQuery := db.Query("SELECT room_id,hotel_id,room_name,room_type,room_price,room_facility,room_capacity,room_status FROM rooms WHERE hotel_id=?", hotelID)
+	rows, errQuery := db.Query("SELECT room_id,hotel_id,room_name,room_type,room_price,room_facility,room_capacity,room_status FROM rooms WHERE hotel_id=?", hotelID)
 
-// 	var room models.Room
-// 	var rooms []models.Room
+	var room models.Room
+	var rooms []models.Room
 
-// 	for rows.Next() {
-// 		if err := rows.Scan(&room.ID, &room.HotelID, &room.RoomName, &room.RoomType, &room.RoomPrice, &room.RoomFacility, &room.RoomCapacity, &room.RoomStatus); err != nil {
-// 			log.Println(err.Error())
-// 		} else {
-// 			rooms = append(rooms, room)
-// 		}
-// 	}
+	for rows.Next() {
+		if err := rows.Scan(&room.ID, &room.HotelID, &room.RoomName, &room.RoomType, &room.RoomPrice, &room.RoomFacility, &room.RoomCapacity, &room.RoomStatus); err != nil {
+			log.Println(err.Error())
+		} else {
+			rooms = append(rooms, room)
+		}
+	}
 
-// 	var response models.RoomsResponse
-// 	if errQuery == nil {
-// 		if len(rooms) == 0 {
-// 			SendErrorResponse(w, 400)
-// 		} else {
-// 			response.Status = 200
-// 			response.Message = "Success Get Data"
-// 			response.Data = rooms
-// 		}
-// 	} else {
-// 		SendErrorResponse(w, 400)
-// 	}
-// 	w.Header().Set("Content-Type", "application/json")
-// 	json.NewEncoder(w).Encode(response)
-// 	db.Close()
-// }
+	var response models.RoomsResponse
+	if errQuery == nil {
+		if len(rooms) == 0 {
+			SendErrorResponse(w, 400)
+		} else {
+			response.Status = 200
+			response.Message = "Success Get Data"
+			response.Data = rooms
+		}
+	} else {
+		SendErrorResponse(w, 400)
+	}
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(response)
+	db.Close()
+}
+
 // func AddNewHotelOrder(w http.ResponseWriter, r *http.Request) {
 
 // 	// connect to database
