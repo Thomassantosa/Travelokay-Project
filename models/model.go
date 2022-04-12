@@ -55,15 +55,15 @@ type Seat struct {
 }
 
 type Hotel struct {
-	ID            int    `json:"hotel_id"`
-	HotelName     string `json:"hotel_name"`
-	HotelStar     int    `json:"hotel_star"`
-	HotelRating   int    `json:"hotel_rating"`
-	HotelReview   int    `json:"hotel_review"`
-	HotelFacility string `json:"hotel_facility"`
-	HotelAddress  string `json:"hotel_address"`
-	HotelCity     string `json:"hotel_city"`
-	HotelCountry  string `json:"hotel_country"`
+	ID            int     `json:"hotel_id"`
+	HotelName     string  `json:"hotel_name"`
+	HotelStar     int     `json:"hotel_star"`
+	HotelRating   float32 `json:"hotel_rating"`
+	HotelReview   int     `json:"hotel_review"`
+	HotelFacility string  `json:"hotel_facility"`
+	HotelAddress  string  `json:"hotel_address"`
+	HotelCity     string  `json:"hotel_city"`
+	HotelCountry  string  `json:"hotel_country"`
 }
 
 type Room struct {
@@ -116,6 +116,17 @@ type Tours struct {
 	TourCity     string  `json:"tour_city"`
 	TourProvince string  `json:"tour_province"`
 	TourCountry  string  `json:"tour_country"`
+}
+
+type Orders struct {
+	ID              int    `json:"order_id"`
+	UserID          int    `json:"user_id"`
+	SeatID          int    `json:"seat_id"`
+	RoomID          int    `json:"room_id"`
+	TourScheduleID  int    `json:"tourschedule_id"`
+	OrderDate       string `json:"order_date"`
+	OrderStatus     string `json:"order_status"`
+	TransactionType string `json:"transaction_type"`
 }
 
 type ToursSchedule struct {
@@ -231,4 +242,9 @@ type SeatsResponse struct {
 	Status  int    `json:"status"`
 	Message string `json:"message"`
 	Data    []Seat `json:"data"`
+}
+type OrdersResponse struct {
+	Status  int      `json:"status"`
+	Message string   `json:"message"`
+	Data    []Orders `json:"data"`
 }
