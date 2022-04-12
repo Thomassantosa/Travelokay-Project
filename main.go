@@ -17,8 +17,8 @@ func main() {
 	router.HandleFunc("/logout", controllers.Logout).Methods("GET")
 	router.HandleFunc("/user", controllers.AddNewUser).Methods("POST")
 	router.HandleFunc("/user", controllers.Authenticate(controllers.UpdateUser, 1)).Methods("PUT")
-	// router.HandleFunc("/user/hotel", controllers.GetHotelList).Methods("GET")
-	// router.HandleFunc("/user/hotel/room", controllers.GetRoomList).Methods("GET")
+	router.HandleFunc("/user/hotel", controllers.GetHotelList).Methods("GET")
+	router.HandleFunc("/user/hotel/room", controllers.GetRoomList).Methods("GET")
 	// router.HandleFunc("/user/hotel/room", controllers.Authenticate(controllers.AddNewHotelOrder, 1)).Methods("POST")
 	router.HandleFunc("/user/flight", controllers.GetFlightList).Methods("GET")
 	router.HandleFunc("/user/flight/seat", controllers.GetFlightSeatList).Methods("GET")
@@ -38,6 +38,7 @@ func main() {
 	// router.HandleFunc("/partner/flight", controllers.Authenticate(controllers.AddNewFlight, 2)).Methods("POST")
 	// router.HandleFunc("/partner/flight", controllers.Authenticate(controllers.DeleteFlight, 2)).Methods("DELETE")
 
+	router.HandleFunc("/admin/refund", controllers.GetRefundList).Methods("GET")
 	// router.HandleFunc("/admin/refund", controllers.Authenticate(controllers.GetRefundList, 0)).Methods("GET")
 	// router.HandleFunc("/admin/refund", controllers.Authenticate(controllers.ApproveRefund, 0)).Methods("DELETE")
 
