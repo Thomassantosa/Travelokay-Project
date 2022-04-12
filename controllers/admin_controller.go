@@ -9,23 +9,24 @@ import (
 )
 
 func GetRefundList(w http.ResponseWriter, r *http.Request) {
+
+	// Connect to database
 	db := Connect()
 	defer db.Close()
 
-	err := r.ParseForm()
-	if err != nil {
+	// Query
+	rows, errQuery := db.Query("SELECT * FROM orders WHERE order_status = 'refund'")
+
+	if errQuery != nil {
+		log.Println(errQuery)
 		return
 	}
-
-	orderStatus := r.Form.Get("order_status")
-
-	rows, errQuery := db.Query("SELECT order_id,user_id,order_date,order_status,transaction_type FROM orders WHERE order_status=?", orderStatus)
 
 	var order models.Orders
 	var orders []models.Orders
 
 	for rows.Next() {
-		if err := rows.Scan(&order.ID, &order.UserID, &order.OrderDate, &order.OrderStatus, &order.TransactionType); err != nil {
+		if err := rows.Scan(&order.ID, &order.UserID, &order.SeatID, &order.RoomID, &order.TourScheduleID, &order.OrderDate, &order.OrderStatus, &order.TransactionType); err != nil {
 			log.Println(err.Error())
 		} else {
 			orders = append(orders, order)
@@ -33,18 +34,13 @@ func GetRefundList(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var response models.OrdersResponse
-	if errQuery == nil {
-		if len(orders) == 0 {
-			SendErrorResponse(w, 400)
-		} else {
-			response.Status = 200
-			response.Message = "Success Get Data"
-			response.Data = orders
-		}
+	if len(orders) == 0 {
+		SendMessageOnlyResponse(w, "Data empty")
 	} else {
-		SendErrorResponse(w, 400)
+		response.Status = 200
+		response.Message = "Success Get Data"
+		response.Data = orders
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(response)
 	}
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(response)
-	db.Close()
 }

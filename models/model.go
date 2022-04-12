@@ -1,5 +1,7 @@
 package models
 
+import "database/sql"
+
 type User struct {
 	ID          int    `json:"id"`
 	Fullname    string `json:"fullname"`
@@ -119,15 +121,26 @@ type Tours struct {
 }
 
 type Orders struct {
-	ID              int    `json:"order_id"`
-	UserID          int    `json:"user_id"`
-	SeatID          int    `json:"seat_id"`
-	RoomID          int    `json:"room_id"`
-	TourScheduleID  int    `json:"tourschedule_id"`
-	OrderDate       string `json:"order_date"`
-	OrderStatus     string `json:"order_status"`
-	TransactionType string `json:"transaction_type"`
+	ID              int           `json:"order_id"`
+	UserID          int           `json:"user_id"`
+	SeatID          sql.NullInt64 `json:"seat_id"`
+	RoomID          sql.NullInt64 `json:"room_id"`
+	TourScheduleID  sql.NullInt64 `json:"tourschedule_id"`
+	OrderDate       string        `json:"order_date"`
+	OrderStatus     string        `json:"order_status"`
+	TransactionType string        `json:"transaction_type"`
 }
+
+// type Orders struct {
+// 	ID              int    `json:"order_id"`
+// 	UserID          int    `json:"user_id"`
+// 	SeatID          int    `json:"seat_id"`
+// 	RoomID          int    `json:"room_id"`
+// 	TourScheduleID  int    `json:"tourschedule_id"`
+// 	OrderDate       string `json:"order_date"`
+// 	OrderStatus     string `json:"order_status"`
+// 	TransactionType string `json:"transaction_type"`
+// }
 
 type ToursSchedule struct {
 	ID          int `json:"schedule_id"`
