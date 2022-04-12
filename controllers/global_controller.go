@@ -180,7 +180,7 @@ func GetHotelList(w http.ResponseWriter, r *http.Request) {
 	var hotels []models.Hotel
 
 	for rows.Next() {
-		if err := rows.Scan(&hotel.ID, &hotel.HotelName, &hotel.HotelStar, &hotel.HotelReview, &hotel.HotelRating, &hotel.HotelAddress, &hotel.HotelFacility, &hotel.HotelCity, &hotel.HotelCountry); err != nil {
+		if err := rows.Scan(&hotel.ID, &hotel.HotelName, &hotel.HotelStar, &hotel.HotelRating, &hotel.HotelReview, &hotel.HotelAddress, &hotel.HotelFacility, &hotel.HotelCity, &hotel.HotelCountry); err != nil {
 			log.Println(err.Error())
 		} else {
 			hotels = append(hotels, hotel)
