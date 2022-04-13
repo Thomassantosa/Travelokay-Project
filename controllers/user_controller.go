@@ -195,3 +195,23 @@ func GetUserOrder(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode(response)
 	}
 }
+
+func RequestRefund(w http.ResponseWriter, r *http.Request) {
+	db := Connect()
+	defer db.Close()
+
+	err := r.ParseForm()
+	if err != nil {
+		return
+	}
+	userId := GetIdFromCookie(r)
+	orderId := r.Form.Get("orderId")
+
+	_, errQuery := db.Exec("UPDATE orders SET order_status = 'refund' WHERE order_id=? AND user_id=?", orderId, userId)
+
+	if errQuery != nil {
+		SendErrorResponse(w, 400)
+	} else {
+		SendSuccessResponse(w)
+	}
+}

@@ -29,8 +29,8 @@
 | 14 | /user/tour	      | All		    | GET		    |ON PROGRESS|
 | 15 | /user/tourSchedule| All		  | GET		    | done      |
 | 16 | /user/tour	      | User		  | POST		  | done      |
-| 17 | /user/order	    | User		  | GET		    |           |
-| 18 | /user/order 	    | User		  | PUT	      |           |
+| 17 | /user/order	    | User		  | GET		    | done      |
+| 18 | /user/order 	    | User		  | PUT	      | done      |
 | 19 | /partner	        | All		    | POST		  | done      |
 | 20 | /partner	        | Partner	  | PUT		    | done      |
 | 21 | /partner/flight  | Partner	  | GET		    |           |
