@@ -44,3 +44,22 @@ func GetRefundList(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode(response)
 	}
 }
+
+func ApproveRefund(w http.ResponseWriter, r *http.Request) {
+	db := Connect()
+	defer db.Close()
+
+	err := r.ParseForm()
+	if err != nil {
+		return
+	}
+	orderId := r.Form.Get("orderId")
+
+	_, errQuery := db.Exec("DELETE FROM orders WHERE order_id=? AND order_status='refund'", orderId)
+
+	if errQuery != nil {
+		SendErrorResponse(w, 400)
+	} else {
+		SendSuccessResponse(w)
+	}
+}
