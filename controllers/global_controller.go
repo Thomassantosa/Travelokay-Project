@@ -10,7 +10,6 @@ import (
 	"strconv"
 
 	models "github.com/Travelokay-Project/models"
-	"github.com/gorilla/mux"
 	"github.com/joho/godotenv"
 )
 
@@ -485,46 +484,41 @@ func GetFlightSeatList(w http.ResponseWriter, r *http.Request) {
 // }
 
 func GetTourList(w http.ResponseWriter, r *http.Request) {
-
 	// Connect to database
 	db := Connect()
 	defer db.Close()
 
-	// Get value from query params
-	vars := mux.Vars(r)
-	tourName := vars["tourName"]
-	tourCity := vars["tourCity"]
-	tourCountry := vars["tourCountry"]
+	tourCity := r.URL.Query().Get("tourCity")
 
-	query := `SELECT * FROM tours`
-
-	rows, errQuery := db.Query(query, tourName, tourCity, tourCountry)
+	rows, errQuery := db.Query("SELECT * FROM tours WHERE tour_city=?", tourCity)
+	if errQuery != nil {
+		SendErrorResponse(w, 400)
+		return
+	}
 	var tour models.Tours
 	var tours []models.Tours
 
 	for rows.Next() {
 		if err := rows.Scan(&tour.ID, &tour.TourName, &tour.TourRating, &tour.TourReview, &tour.TourDesc, &tour.TourFacility, &tour.TourAddress, &tour.TourCity, &tour.TourProvince, &tour.TourCountry); err != nil {
 			log.Println(err.Error())
+			return
 		} else {
 			tours = append(tours, tour)
 		}
 	}
 
 	var response models.ToursResponse
-	if errQuery == nil {
-		if len(tours) == 0 {
-			SendErrorResponse(w, 400)
-		} else {
-			response.Status = 200
-			response.Message = "Success Get Data"
-			response.Data = tours
-		}
+
+	if len(tours) == 0 {
+		SendErrorResponse(w, 204)
+		return
 	} else {
-		SendErrorResponse(w, 400)
+		response.Status = 200
+		response.Message = "Success Get Data"
+		response.Data = tours
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(response)
 	}
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(response)
-	db.Close()
 }
 
 func GetTourScheduleList(w http.ResponseWriter, r *http.Request) {
@@ -533,42 +527,35 @@ func GetTourScheduleList(w http.ResponseWriter, r *http.Request) {
 	db := Connect()
 	defer db.Close()
 
-	// Get value from query params
-	vars := mux.Vars(r)
-	scheduleDay := vars["scheduleDay"]
-	openTime := vars["openTime"]
-	closeTime := vars["closeTime"]
-	price := vars["price"]
+	tourId := r.URL.Query().Get("tourId")
 
-	query := `SELECT * FROM flights` +
-		`JOIN airplanes`
-
-	rows, errQuery := db.Query(query, scheduleDay, openTime, closeTime, price)
-
+	rows, errQuery := db.Query("SELECT * FROM tourschedules WHERE tour_id=?", tourId)
+	if errQuery != nil {
+		SendErrorResponse(w, 400)
+		return
+	}
 	var tour models.ToursSchedule
 	var tours []models.ToursSchedule
 
 	for rows.Next() {
 		if err := rows.Scan(&tour.ID, &tour.TourID, &tour.ScheduleDay, &tour.OpenTime, &tour.CloseTime, &tour.Price); err != nil {
 			log.Println(err.Error())
+			return
 		} else {
 			tours = append(tours, tour)
 		}
 	}
 
 	var response models.ToursScheduleResponse
-	if errQuery == nil {
-		if len(tours) == 0 {
-			SendErrorResponse(w, 400)
-		} else {
-			response.Status = 200
-			response.Message = "Success Get Data"
-			response.Data = tours
-		}
+	if len(tours) == 0 {
+		SendErrorResponse(w, 204)
+		return
 	} else {
-		SendErrorResponse(w, 400)
+		response.Status = 200
+		response.Message = "Success Get Data"
+		response.Data = tours
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(response)
 	}
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(response)
-	db.Close()
+
 }

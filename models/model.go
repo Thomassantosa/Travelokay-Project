@@ -143,12 +143,12 @@ type Orders struct {
 // }
 
 type ToursSchedule struct {
-	ID          int `json:"schedule_id"`
-	TourID      int `json:"tour_id"`
-	ScheduleDay int `json:"schedule_day"`
-	OpenTime    int `json:"opentime"`
-	CloseTime   int `json:"closetime"`
-	Price       int `json:"price"`
+	ID          int    `json:"schedule_id"`
+	TourID      int    `json:"tour_id"`
+	ScheduleDay int    `json:"schedule_day"`
+	OpenTime    string `json:"opentime"`
+	CloseTime   string `json:"closetime"`
+	Price       int    `json:"price"`
 }
 
 type MessageResponse struct {
