@@ -31,7 +31,7 @@ func main() {
 	router.HandleFunc("/user/tourschedule", controllers.GetTourScheduleList).Methods("GET")
 	// router.HandleFunc("/user/tour", controllers.Authenticate(controllers.AddNewTourOrder, 1)).Methods("POST")
 	router.HandleFunc("/user/order", controllers.Authenticate(controllers.GetUserOrder, 1)).Methods("GET")
-	// router.HandleFunc("/user/order", controllers.Authenticate(controllers.RequestRefund, 1)).Methods("PUT")
+	router.HandleFunc("/user/order", controllers.Authenticate(controllers.RequestRefund, 1)).Methods("PUT")
 
 	router.HandleFunc("/partner", controllers.AddNewPartner).Methods("POST")
 	router.HandleFunc("/partner", controllers.Authenticate(controllers.UpdatePartner, 2)).Methods("PUT")
