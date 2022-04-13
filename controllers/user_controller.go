@@ -3,9 +3,12 @@ package controllers
 import (
 	"crypto/md5"
 	"encoding/hex"
+	"encoding/json"
 	"log"
 	"net/http"
 	"strconv"
+
+	models "github.com/Travelokay-Project/models"
 )
 
 func UpdateUser(w http.ResponseWriter, r *http.Request) {
@@ -152,5 +155,43 @@ func AddNewFlightOrder(w http.ResponseWriter, r *http.Request) {
 	} else {
 		SendMessageOnlyResponse(w, "Seat already booked")
 		return
+	}
+}
+
+func GetUserOrder(w http.ResponseWriter, r *http.Request) {
+	db := Connect()
+	defer db.Close()
+
+	userId := GetIdFromCookie(r)
+
+	rows, errQuery := db.Query("SELECT * FROM orders WHERE user_id=?", userId)
+	if errQuery != nil {
+		SendErrorResponse(w, 400)
+		return
+	}
+
+	var order models.Orders
+	var orders []models.Orders
+
+	for rows.Next() {
+		if err := rows.Scan(&order.ID, &order.UserID, &order.SeatID, &order.RoomID, &order.TourScheduleID, &order.OrderDate, &order.OrderStatus, &order.TransactionType); err != nil {
+			log.Println(err.Error())
+			return
+		} else {
+			orders = append(orders, order)
+		}
+	}
+
+	var response models.OrdersResponse
+
+	if len(orders) == 0 {
+		SendErrorResponse(w, 204)
+		return
+	} else {
+		response.Status = 200
+		response.Message = "Success Get Data"
+		response.Data = orders
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(response)
 	}
 }
