@@ -36,8 +36,8 @@
 | 21 | /partner/flight  | Partner	  | GET		    |           |
 | 22 | /partner/flight  | Partner	  | POST  	  |           |
 | 23 | /partner/flight  | Partner	  | DELETE	  |           |
-| 24 | /admin/refund    | Admin		  | GET		    |           |
-| 25 | /admin/refund    | Admin		  | DELETE	  |           |
+| 24 | /admin/refund    | Admin		  | GET		    | done      |
+| 25 | /admin/refund    | Admin		  | DELETE	  | done      |
 
 
 
