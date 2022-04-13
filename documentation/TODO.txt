@@ -27,8 +27,8 @@
 | 12 | /user/train	    | All		    | GET		    |ON PROGRESS|
 | 13 | /user/train	    | User		  | POST		  |ON PROGRESS|
 | 14 | /user/tour	      | All		    | GET		    |ON PROGRESS|
-| 15 | /user/tourSchedule| All		  | GET		    | testing   |
-| 16 | /user/tour	      | User		  | POST		  |ON PROGRESS|
+| 15 | /user/tourSchedule| All		  | GET		    | done      |
+| 16 | /user/tour	      | User		  | POST		  | done      |
 | 17 | /user/order	    | User		  | GET		    |           |
 | 18 | /user/order 	    | User		  | PUT	      |           |
 | 19 | /partner	        | All		    | POST		  | done      |
