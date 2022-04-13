@@ -35,7 +35,7 @@ func GetRefundList(w http.ResponseWriter, r *http.Request) {
 
 	var response models.OrdersResponse
 	if len(orders) == 0 {
-		SendMessageOnlyResponse(w, "Data empty")
+		SendErrorResponse(w, 204)
 	} else {
 		response.Status = 200
 		response.Message = "Success Get Data"

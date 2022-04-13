@@ -24,6 +24,8 @@ func SendErrorResponse(w http.ResponseWriter, errCode int) {
 	response.Status = errCode
 
 	switch errCode {
+	case 204:
+		response.Message = "No Content"
 	case 500:
 		response.Message = "Internal server error"
 	case 400:

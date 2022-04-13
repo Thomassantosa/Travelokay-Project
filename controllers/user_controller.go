@@ -107,8 +107,6 @@ func AddNewTrainOrder(w http.ResponseWriter, r *http.Request) {
 
 func AddNewFlightOrder(w http.ResponseWriter, r *http.Request) {
 
-	log.Println("A")
-
 	// Connect to database
 	db := Connect()
 	defer db.Close()
@@ -116,7 +114,6 @@ func AddNewFlightOrder(w http.ResponseWriter, r *http.Request) {
 	// Get value from form
 	err := r.ParseForm()
 	if err != nil {
-		log.Println("B")
 		SendErrorResponse(w, 500)
 		log.Println(err)
 		return
@@ -143,12 +140,10 @@ func AddNewFlightOrder(w http.ResponseWriter, r *http.Request) {
 		if errQuery1 == nil && errQuery2 == nil {
 			SendSuccessResponse(w)
 		} else if errQuery1 != nil {
-			log.Println("C")
 			log.Println(errQuery1)
 			SendErrorResponse(w, 400)
 			return
 		} else {
-			log.Println("D")
 			log.Println(errQuery2)
 			SendErrorResponse(w, 400)
 			return
