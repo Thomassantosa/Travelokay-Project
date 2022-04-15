@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
 
 	models "github.com/Travelokay-Project/models"
@@ -49,4 +50,12 @@ func SendMessageOnlyResponse(w http.ResponseWriter, message string) {
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(response)
+}
+
+func PrintError(err error) {
+	log.Println(string("\033[31m"), "(ERROR)\t", string("\033[0m"), err)
+}
+
+func PrintSuccess(text string) {
+	log.Println(string("\033[32m"), "(SUCCESS)\t", string("\033[0m"), text)
 }

@@ -3,6 +3,7 @@ package controllers
 import (
 	"crypto/md5"
 	"encoding/hex"
+	"log"
 	"net/http"
 	"strconv"
 )
@@ -66,5 +67,6 @@ func UpdatePartner(w http.ResponseWriter, r *http.Request) {
 		SendErrorResponse(w, 400)
 	} else {
 		SendSuccessResponse(w)
+		log.Println("(SUCCESS)\t", "Update partner request")
 	}
 }

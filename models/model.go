@@ -47,6 +47,43 @@ type Airport struct {
 	Country string `json:"airport_country"`
 }
 
+type Traintrip struct {
+	ID                 int     `json:"traintrip_id"`
+	TrainModel         string  `json:"train_model"`
+	DepartureStation   Station `json:"departure_station"`
+	DestinationStation Station `json:"destination_station"`
+	TrainTripNumber    string  `json:"traintrip_number"`
+	DepartureTime      string  `json:"departure_time"`
+	ArrivalTime        string  `json:"arrival_time"`
+	TravelTime         int     `json:"travel_time"`
+}
+
+type Station struct {
+	ID   int    `json:"station_id"`
+	Code string `json:"station_code"`
+	Name string `json:"station_name"`
+	City string `json:"station_city"`
+}
+
+type Bustrip struct {
+	ID                    int        `json:"bustrip_id"`
+	BusModel              string     `json:"bus_model"`
+	CompanyName           string     `json:"buscompany_name"`
+	DepartureBusstation   Busstation `json:"departure_busstation"`
+	DestinationBusstation Busstation `json:"destination_busstation"`
+	BustripNumber         string     `json:"bustrip_number"`
+	DepartureTime         string     `json:"departure_time"`
+	ArrivalTime           string     `json:"arrival_time"`
+	TravelTime            int        `json:"travel_time"`
+}
+
+type Busstation struct {
+	ID   int    `json:"busstation_id"`
+	Code string `json:"busstation_code"`
+	Name string `json:"busstation_name"`
+	City string `json:"busstation_city"`
+}
+
 type Seat struct {
 	ID              int    `json:"seat_id"`
 	SeatType        string `json:"seat_type"`
@@ -81,32 +118,6 @@ type Room struct {
 	CheckOut     string `json:"checkout"`
 }
 
-type Bustrip struct {
-	ID                    int    `json:"bustrip_id"`
-	BusID                 int    `json:"bus_id"`
-	DepartureBusstation   int    `json:"departure_busstation"`
-	DestinationBusstation int    `json:"destination_busstation"`
-	BusNumber             string `json:"bus_number"`
-	DepartureTime         string `json:"departure_time"`
-	DepartureDate         string `json:"departure_date"`
-	ArrivalTime           string `json:"arrival_time"`
-	ArrivalDate           string `json:"arrival_date"`
-	TravelTime            int    `json:"travel_time"`
-}
-
-type Traintrip struct {
-	ID                 int    `json:"traintrip_id"`
-	TrainID            int    `json:"train_id"`
-	DepartureStation   int    `json:"departure_station"`
-	DestinationStation int    `json:"destination_station"`
-	TraintripNumber    string `json:"trainTrip_number"`
-	DepartureTime      string `json:"departure_time"`
-	DepartureDate      string `json:"departure_date"`
-	ArrivalTime        string `json:"arrival_time"`
-	ArrivalDate        string `json:"arrival_date"`
-	TravelTime         int    `json:"travel_time"`
-}
-
 type Tours struct {
 	ID           int     `json:"tour_id"`
 	TourName     string  `json:"tour_name"`
@@ -130,17 +141,6 @@ type Orders struct {
 	OrderStatus     string        `json:"order_status"`
 	TransactionType string        `json:"transaction_type"`
 }
-
-// type Orders struct {
-// 	ID              int    `json:"order_id"`
-// 	UserID          int    `json:"user_id"`
-// 	SeatID          int    `json:"seat_id"`
-// 	RoomID          int    `json:"room_id"`
-// 	TourScheduleID  int    `json:"tourschedule_id"`
-// 	OrderDate       string `json:"order_date"`
-// 	OrderStatus     string `json:"order_status"`
-// 	TransactionType string `json:"transaction_type"`
-// }
 
 type ToursSchedule struct {
 	ID          int    `json:"schedule_id"`
@@ -227,13 +227,7 @@ type BusesResponse struct {
 	Data    []Bustrip `json:"data"`
 }
 
-type TrainResponse struct {
-	Status  int       `json:"status"`
-	Message string    `json:"message"`
-	Data    Traintrip `json:"data"`
-}
-
-type TrainsResponse struct {
+type TrainTripsResponse struct {
 	Status  int         `json:"status"`
 	Message string      `json:"message"`
 	Data    []Traintrip `json:"data"`
