@@ -26,9 +26,9 @@
 | 11 | /user/bus 	      | User		  | POST		  |ON PROGRESS|
 | 12 | /user/train	    | All		    | GET		    |ON PROGRESS|
 | 13 | /user/train	    | User		  | POST		  |ON PROGRESS|
-| 14 | /user/tour	      | All		    | GET		    |ON PROGRESS|
+| 14 | /user/tour	      | All		    | GET		    | done      |
 | 15 | /user/tourSchedule| All		  | GET		    | done      |
-| 16 | /user/tour	      | User		  | POST		  | done      |
+| 16 | /user/tour	      | User		  | POST		  |ON PROGRESS|
 | 17 | /user/order	    | User		  | GET		    | done      |
 | 18 | /user/order 	    | User		  | PUT	      | done      |
 | 19 | /partner	        | All		    | POST		  | done      |
