@@ -2,14 +2,14 @@
 
 [Mandatory]
 1) CORS
-    ->
+    -> Authenticate Cookie
 2) ENV
     -> database name, database port, server port, jwt key, email & password
 3) Authentication JWT
     -> Handle endpoint access (admin, user, partner)
 4) Tools
     -> Gomail       : Order receipt dikirimkan ke email user
-    -> GoCRON       : Tiap minggu mengirimkan promo ke email user
+    -> GoCRON       : Tiap tanggal khusus mengirimkan promo ke email user
     -> Goroutine    : Proses query & pengiriman email dilakukan bersamaan
 
 5) Github Action
