@@ -19,21 +19,16 @@ func UpdateUser(w http.ResponseWriter, r *http.Request) {
 	defer db.Close()
 
 	// Get value from form
-	err := r.ParseForm()
-	if err != nil {
-		return
-	}
-	fullname := r.Form.Get("fullname")
-	username := r.Form.Get("username")
-	email := r.Form.Get("email")
-	password := r.Form.Get("password")
+	fullname := r.FormValue("fullname")
+	username := r.FormValue("username")
+	email := r.FormValue("email")
+	password := r.FormValue("password")
+	address := r.FormValue("address")
 
 	// encrypt password
 	hasher := md5.New()
 	hasher.Write([]byte(password))
 	encryptedPassword := hex.EncodeToString(hasher.Sum(nil))
-
-	address := r.Form.Get("address")
 
 	// Query
 	query := "UPDATE users SET"
@@ -53,6 +48,7 @@ func UpdateUser(w http.ResponseWriter, r *http.Request) {
 	if address != "" {
 		query += " address = '" + address + "',"
 	}
+
 	queryNew := query[:len(query)-1] // Delete last coma
 	userId := GetIdFromCookie(r)
 	queryNew += " WHERE user_id = " + strconv.Itoa(userId)
@@ -60,104 +56,212 @@ func UpdateUser(w http.ResponseWriter, r *http.Request) {
 	_, errQuery := db.Exec(queryNew)
 
 	if errQuery != nil {
+		log.Println("(ERROR)\t", errQuery)
 		SendErrorResponse(w, 400)
 	} else {
 		SendSuccessResponse(w)
+		log.Println("(SUCCESS)\t", "Update partner request")
 	}
 }
 
-func AddNewBusOrder(w http.ResponseWriter, r *http.Request) {
+func AddNewOrder(w http.ResponseWriter, r *http.Request) {
+
 	// Connect to database
 	db := Connect()
 	defer db.Close()
 
 	// Get value from form
-	err := r.ParseForm()
-	if err != nil {
-		return
-	}
-}
-
-func AddNewTrainOrder(w http.ResponseWriter, r *http.Request) {
-	// Connect to database
-	db := Connect()
-	defer db.Close()
-
-	// Get value from form
-	err := r.ParseForm()
-	if err != nil {
-		SendErrorResponse(w, 500)
-		log.Println(err)
-		return
-	}
 	userId := GetIdFromCookie(r)
-	seatId := r.Form.Get("seatId")
-	transactionType := r.Form.Get("transactionType")
-	// Query order & update seat_status
-	_, errQuery1 := db.Exec("INSERT INTO orders(user_id, seat_id, transaction_type) values (?,?,?)", userId, seatId, transactionType)
-	_, errQuery2 := db.Exec("UPDATE seats SET seat_status = 1 WHERE seat_id = ", seatId)
+	seatId := r.FormValue("seatId")
+	roomId := r.FormValue("roomId")
+	tourScheduleId := r.FormValue("tourScheduleId")
+	transactionType := r.FormValue("transactionType")
 
-	if errQuery1 == nil && errQuery2 == nil {
-		SendSuccessResponse(w)
-	} else if errQuery1 != nil {
-		log.Println(errQuery1)
-		SendErrorResponse(w, 400)
-		return
-	} else {
-		log.Println(errQuery2)
-		SendErrorResponse(w, 400)
-		return
-	}
-}
+	// Order flight, traintrip, or bustrip
+	if seatId != "" {
 
-func AddNewFlightOrder(w http.ResponseWriter, r *http.Request) {
-
-	// Connect to database
-	db := Connect()
-	defer db.Close()
-
-	// Get value from form
-	err := r.ParseForm()
-	if err != nil {
-		SendErrorResponse(w, 500)
-		log.Println(err)
-		return
-	}
-	userId := GetIdFromCookie(r)
-	seatId := r.Form.Get("seatId")
-	transactionType := r.Form.Get("transactionType")
-
-	// Check seat_id
-	row := db.QueryRow("SELECT seat_status FROM seats WHERE seat_id=?", seatId)
-	var seatType int
-	if err := row.Scan(&seatType); err != nil {
-		SendErrorResponse(w, 400)
-		log.Print(err)
-		return
-	}
-
-	if seatType == 0 {
-
-		// Query order & update seat_status
-		_, errQuery1 := db.Exec("INSERT INTO orders(user_id, seat_id, transaction_type) values (?,?,?)", userId, seatId, transactionType)
-		_, errQuery2 := db.Exec("UPDATE seats SET seat_status = 1 WHERE seat_id = ?", seatId)
-
-		if errQuery1 == nil && errQuery2 == nil {
-			SendSuccessResponse(w)
-		} else if errQuery1 != nil {
-			log.Println(errQuery1)
-			SendErrorResponse(w, 400)
+		// Check seat_id
+		row := db.QueryRow("SELECT seat_status FROM seats WHERE seat_id = ?", seatId)
+		var seatStatus int
+		if err := row.Scan(&seatStatus); err != nil {
+			log.Print("(ERROR)\t", err)
+			SendErrorResponse(w, 500)
 			return
+		}
+
+		if seatStatus == 0 {
+
+			// Query order & update seat_status
+			_, errQuery1 := db.Exec("INSERT INTO orders(user_id, seat_id, transaction_type) values (?,?,?)", userId, seatId, transactionType)
+			_, errQuery2 := db.Exec("UPDATE seats SET seat_status = 1 WHERE seat_id = ?", seatId)
+
+			if errQuery1 != nil {
+				log.Println("(ERROR)\t", errQuery1)
+				SendErrorResponse(w, 500)
+				return
+			}
+			if errQuery2 != nil {
+				log.Println("(ERROR)\t", errQuery2)
+				SendErrorResponse(w, 500)
+				return
+			}
+			SendSuccessResponse(w)
+			log.Println("(SUCCESS)\t", "Add new order success")
+			return
+
 		} else {
-			log.Println(errQuery2)
+			SendMessageOnlyResponse(w, "Seat already booked")
+			return
+		}
+	}
+
+	// Order room
+	if roomId != "" {
+
+		// Check room_id
+		row := db.QueryRow("SELECT room_status FROM rooms WHERE room_id = ?", roomId)
+		var roomStatus int
+		if err := row.Scan(&roomStatus); err != nil {
+			log.Print("(ERROR)\t", err)
 			SendErrorResponse(w, 400)
 			return
 		}
-	} else {
-		SendMessageOnlyResponse(w, "Seat already booked")
-		return
+
+		if roomStatus == 0 {
+
+			// Query order & update seat_status
+			_, errQuery1 := db.Exec("INSERT INTO orders(user_id, room_id, transaction_type) values (?,?,?)", userId, roomId, transactionType)
+			_, errQuery2 := db.Exec("UPDATE rooms SET room_status = 1 WHERE room_id = ?", roomId)
+
+			if errQuery1 != nil {
+				log.Println("(ERROR)\t", errQuery1)
+				SendErrorResponse(w, 500)
+				return
+			}
+			if errQuery2 != nil {
+				log.Println("(ERROR)\t", errQuery2)
+				SendErrorResponse(w, 500)
+				return
+			}
+			SendSuccessResponse(w)
+			log.Println("(SUCCESS)\t", "Add new order success")
+			return
+		} else {
+			SendMessageOnlyResponse(w, "Room already booked")
+			return
+		}
+	}
+
+	// Order tour
+	if tourScheduleId != "" {
+
+		// Query order
+		_, errQuery := db.Exec("INSERT INTO orders(user_id, tourschedule_id, transaction_type) values (?,?,?)", userId, tourScheduleId, transactionType)
+
+		if errQuery != nil {
+			log.Println("(ERROR)\t", errQuery)
+			SendErrorResponse(w, 400)
+			return
+		} else {
+			SendSuccessResponse(w)
+			log.Println("(SUCCESS)\t", "Add new order success")
+			return
+		}
 	}
 }
+
+// func AddNewBusOrder(w http.ResponseWriter, r *http.Request) {
+// 	// Connect to database
+// 	db := Connect()
+// 	defer db.Close()
+
+// 	// Get value from form
+// 	err := r.ParseForm()
+// 	if err != nil {
+// 		return
+// 	}
+// }
+
+// func AddNewTrainOrder(w http.ResponseWriter, r *http.Request) {
+// 	// Connect to database
+// 	db := Connect()
+// 	defer db.Close()
+
+// 	// Get value from form
+// 	err := r.ParseForm()
+// 	if err != nil {
+// 		SendErrorResponse(w, 500)
+// 		log.Println(err)
+// 		return
+// 	}
+// 	userId := GetIdFromCookie(r)
+// 	seatId := r.Form.Get("seatId")
+// 	transactionType := r.Form.Get("transactionType")
+// 	// Query order & update seat_status
+// 	_, errQuery1 := db.Exec("INSERT INTO orders(user_id, seat_id, transaction_type) values (?,?,?)", userId, seatId, transactionType)
+// 	_, errQuery2 := db.Exec("UPDATE seats SET seat_status = 1 WHERE seat_id = ", seatId)
+
+// 	if errQuery1 == nil && errQuery2 == nil {
+// 		SendSuccessResponse(w)
+// 	} else if errQuery1 != nil {
+// 		log.Println(errQuery1)
+// 		SendErrorResponse(w, 400)
+// 		return
+// 	} else {
+// 		log.Println(errQuery2)
+// 		SendErrorResponse(w, 400)
+// 		return
+// 	}
+// }
+
+// func AddNewFlightOrder(w http.ResponseWriter, r *http.Request) {
+
+// 	// Connect to database
+// 	db := Connect()
+// 	defer db.Close()
+
+// 	// Get value from form
+// 	err := r.ParseForm()
+// 	if err != nil {
+// 		SendErrorResponse(w, 500)
+// 		log.Println(err)
+// 		return
+// 	}
+// 	userId := GetIdFromCookie(r)
+// 	seatId := r.Form.Get("seatId")
+// 	transactionType := r.Form.Get("transactionType")
+
+// 	// Check seat_id
+// 	row := db.QueryRow("SELECT seat_status FROM seats WHERE seat_id=?", seatId)
+// 	var seatType int
+// 	if err := row.Scan(&seatType); err != nil {
+// 		SendErrorResponse(w, 400)
+// 		log.Print(err)
+// 		return
+// 	}
+
+// 	if seatType == 0 {
+
+// 		// Query order & update seat_status
+// 		_, errQuery1 := db.Exec("INSERT INTO orders(user_id, seat_id, transaction_type) values (?,?,?)", userId, seatId, transactionType)
+// 		_, errQuery2 := db.Exec("UPDATE seats SET seat_status = 1 WHERE seat_id = ?", seatId)
+
+// 		if errQuery1 == nil && errQuery2 == nil {
+// 			SendSuccessResponse(w)
+// 		} else if errQuery1 != nil {
+// 			log.Println(errQuery1)
+// 			SendErrorResponse(w, 400)
+// 			return
+// 		} else {
+// 			log.Println(errQuery2)
+// 			SendErrorResponse(w, 400)
+// 			return
+// 		}
+// 	} else {
+// 		SendMessageOnlyResponse(w, "Seat already booked")
+// 		return
+// 	}
+// }
 
 func GetUserOrder(w http.ResponseWriter, r *http.Request) {
 

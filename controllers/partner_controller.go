@@ -15,23 +15,18 @@ func UpdatePartner(w http.ResponseWriter, r *http.Request) {
 	defer db.Close()
 
 	// Get value from form
-	err := r.ParseForm()
-	if err != nil {
-		return
-	}
-	fullname := r.Form.Get("fullname")
-	username := r.Form.Get("username")
-	email := r.Form.Get("email")
-	password := r.Form.Get("password")
+	fullname := r.FormValue("fullname")
+	username := r.FormValue("username")
+	email := r.FormValue("email")
+	password := r.FormValue("password")
+	address := r.FormValue("address")
+	partnerType := r.FormValue("partnerType")
+	companyName := r.FormValue("companyName")
 
 	// encrypt password
 	hasher := md5.New()
 	hasher.Write([]byte(password))
 	encryptedPassword := hex.EncodeToString(hasher.Sum(nil))
-
-	address := r.Form.Get("address")
-	partnerType := r.Form.Get("partnerType")
-	companyName := r.Form.Get("companyName")
 
 	// Query
 	query := "UPDATE users SET"
@@ -57,6 +52,7 @@ func UpdatePartner(w http.ResponseWriter, r *http.Request) {
 	if companyName != "" {
 		query += " address = '" + companyName + "',"
 	}
+
 	queryNew := query[:len(query)-1] // Delete last coma
 	partnerId := GetIdFromCookie(r)
 	queryNew += " WHERE user_id = " + strconv.Itoa(partnerId)
@@ -64,6 +60,7 @@ func UpdatePartner(w http.ResponseWriter, r *http.Request) {
 	_, errQuery := db.Exec(queryNew)
 
 	if errQuery != nil {
+		log.Println("(ERROR)\t", errQuery)
 		SendErrorResponse(w, 400)
 	} else {
 		SendSuccessResponse(w)
