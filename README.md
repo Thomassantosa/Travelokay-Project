@@ -11,7 +11,7 @@
 | 7  | /user/hotel/room     | User		| POST		| AddNewRoomOrder           | HotelOrderResponse                | Trigger update tabel rooms.                                                                           |
 | 8  | /user/flight	        | All		| GET		| GetFlightList             | FlightsResponse                   | -                                                                                                     |
 | 9  | /user/flight	        | User		| POST		| AddNewFlightOrder         | FlightOrderResponse               | Trigger update tabel seats.                                                                           |
-| 10 | /user/bus 	        | All		| GET		| GetBusList                | BusTripsResponse                  | -                                                                                                     |
+| 10 | /user/bus 	        | All		| GET		| GetBusTripList            | BusTripsResponse                  | -                                                                                                     |
 | 11 | /user/bus 	        | User		| POST		| AddNewBusOrder            | BusOrderResponse                  | Trigger update tabel seats.                                                                           |
 | 12 | /user/train	        | All		| GET		| GetTrainList              | TrainTripsResponse                | -                                                                                                     |
 | 13 | /user/train	        | User		| POST		| AddNewTrainOrder          | TrainOrderResponse                | Trigger update tabel seats.                                                                           |
@@ -27,4 +27,3 @@
 | 23 | /partner/flight      | Partner	| DELETE	| DeleteFlight   	        | MessageResponse                   | Cek berdasarkan nama perusahaan partner.                                                              |
 | 24 | /admin/refund        | Admin		| GET		| GetRefundList   	        | RefundsResponse                   | -                                                                                                     |
 | 25 | /admin/refund        | Admin		| DELETE	| ApproveRefund   	        | MessageResponse                   | -                                                                                                     |
-

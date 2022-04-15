@@ -9,6 +9,7 @@ import (
 	"strconv"
 
 	models "github.com/Travelokay-Project/models"
+	gomail "gopkg.in/gomail.v2"
 )
 
 func UpdateUser(w http.ResponseWriter, r *http.Request) {
@@ -18,20 +19,16 @@ func UpdateUser(w http.ResponseWriter, r *http.Request) {
 	defer db.Close()
 
 	// Get value from form
-	err := r.ParseForm()
-	if err != nil {
-		return
-	}
-	fullname := r.Form.Get("fullname")
-	username := r.Form.Get("username")
-	email := r.Form.Get("email")
-	password := r.Form.Get("password")
+	fullname := r.FormValue("fullname")
+	username := r.FormValue("username")
+	email := r.FormValue("email")
+	password := r.FormValue("password")
+	address := r.FormValue("address")
+
 	// encrypt password
 	hasher := md5.New()
 	hasher.Write([]byte(password))
 	encryptedPassword := hex.EncodeToString(hasher.Sum(nil))
-
-	address := r.Form.Get("address")
 
 	// Query
 	query := "UPDATE users SET"
@@ -51,6 +48,7 @@ func UpdateUser(w http.ResponseWriter, r *http.Request) {
 	if address != "" {
 		query += " address = '" + address + "',"
 	}
+
 	queryNew := query[:len(query)-1] // Delete last coma
 	userId := GetIdFromCookie(r)
 	queryNew += " WHERE user_id = " + strconv.Itoa(userId)
@@ -58,160 +56,307 @@ func UpdateUser(w http.ResponseWriter, r *http.Request) {
 	_, errQuery := db.Exec(queryNew)
 
 	if errQuery != nil {
+		log.Println("(ERROR)\t", errQuery)
 		SendErrorResponse(w, 400)
 	} else {
 		SendSuccessResponse(w)
+		log.Println("(SUCCESS)\t", "Update partner request")
 	}
 }
 
-func AddNewBusOrder(w http.ResponseWriter, r *http.Request) {
+func AddNewOrder(w http.ResponseWriter, r *http.Request) {
+
 	// Connect to database
 	db := Connect()
 	defer db.Close()
 
 	// Get value from form
-	err := r.ParseForm()
-	if err != nil {
-		return
-	}
-}
-
-func AddNewTrainOrder(w http.ResponseWriter, r *http.Request) {
-	// Connect to database
-	db := Connect()
-	defer db.Close()
-
-	// Get value from form
-	err := r.ParseForm()
-	if err != nil {
-		SendErrorResponse(w, 500)
-		log.Println(err)
-		return
-	}
 	userId := GetIdFromCookie(r)
-	seatId := r.Form.Get("seatId")
-	transactionType := r.Form.Get("transactionType")
-	// Query order & update seat_status
-	_, errQuery1 := db.Exec("INSERT INTO orders(user_id, seat_id, transaction_type) values (?,?,?)", userId, seatId, transactionType)
-	_, errQuery2 := db.Exec("UPDATE seats SET seat_status = 1 WHERE seat_id = ", seatId)
+	seatId := r.FormValue("seatId")
+	roomId := r.FormValue("roomId")
+	tourScheduleId := r.FormValue("tourScheduleId")
+	transactionType := r.FormValue("transactionType")
 
-	if errQuery1 == nil && errQuery2 == nil {
-		SendSuccessResponse(w)
-	} else if errQuery1 != nil {
-		log.Println(errQuery1)
-		SendErrorResponse(w, 400)
-		return
-	} else {
-		log.Println(errQuery2)
-		SendErrorResponse(w, 400)
-		return
-	}
-}
+	// Order flight, traintrip, or bustrip
+	if seatId != "" {
 
-func AddNewFlightOrder(w http.ResponseWriter, r *http.Request) {
+		// Check seat_id
+		row := db.QueryRow("SELECT seat_status FROM seats WHERE seat_id = ?", seatId)
+		var seatStatus int
+		if err := row.Scan(&seatStatus); err != nil {
+			log.Print("(ERROR)\t", err)
+			SendErrorResponse(w, 500)
+			return
+		}
 
-	// Connect to database
-	db := Connect()
-	defer db.Close()
+		if seatStatus == 0 {
 
-	// Get value from form
-	err := r.ParseForm()
-	if err != nil {
-		SendErrorResponse(w, 500)
-		log.Println(err)
-		return
-	}
-	userId := GetIdFromCookie(r)
-	seatId := r.Form.Get("seatId")
-	transactionType := r.Form.Get("transactionType")
+			// Query order & update seat_status
+			_, errQuery1 := db.Exec("INSERT INTO orders(user_id, seat_id, transaction_type) values (?,?,?)", userId, seatId, transactionType)
+			_, errQuery2 := db.Exec("UPDATE seats SET seat_status = 1 WHERE seat_id = ?", seatId)
 
-	// Check seat_id
-	row := db.QueryRow("SELECT seat_status FROM seats WHERE seat_id=?", seatId)
-	var seatType int
-	if err := row.Scan(&seatType); err != nil {
-		SendErrorResponse(w, 400)
-		log.Print(err)
-		return
-	}
-
-	if seatType == 0 {
-
-		// Query order & update seat_status
-		_, errQuery1 := db.Exec("INSERT INTO orders(user_id, seat_id, transaction_type) values (?,?,?)", userId, seatId, transactionType)
-		_, errQuery2 := db.Exec("UPDATE seats SET seat_status = 1 WHERE seat_id = ?", seatId)
-
-		if errQuery1 == nil && errQuery2 == nil {
+			if errQuery1 != nil {
+				log.Println("(ERROR)\t", errQuery1)
+				SendErrorResponse(w, 500)
+				return
+			}
+			if errQuery2 != nil {
+				log.Println("(ERROR)\t", errQuery2)
+				SendErrorResponse(w, 500)
+				return
+			}
 			SendSuccessResponse(w)
-		} else if errQuery1 != nil {
-			log.Println(errQuery1)
+			log.Println("(SUCCESS)\t", "Add new order success")
+			return
+
+		} else {
+			SendMessageOnlyResponse(w, "Seat already booked")
+			return
+		}
+	}
+
+	// Order room
+	if roomId != "" {
+
+		// Check room_id
+		row := db.QueryRow("SELECT room_status FROM rooms WHERE room_id = ?", roomId)
+		var roomStatus int
+		if err := row.Scan(&roomStatus); err != nil {
+			log.Print("(ERROR)\t", err)
+			SendErrorResponse(w, 400)
+			return
+		}
+
+		if roomStatus == 0 {
+
+			// Query order & update seat_status
+			_, errQuery1 := db.Exec("INSERT INTO orders(user_id, room_id, transaction_type) values (?,?,?)", userId, roomId, transactionType)
+			_, errQuery2 := db.Exec("UPDATE rooms SET room_status = 1 WHERE room_id = ?", roomId)
+
+			if errQuery1 != nil {
+				log.Println("(ERROR)\t", errQuery1)
+				SendErrorResponse(w, 500)
+				return
+			}
+			if errQuery2 != nil {
+				log.Println("(ERROR)\t", errQuery2)
+				SendErrorResponse(w, 500)
+				return
+			}
+			SendSuccessResponse(w)
+			log.Println("(SUCCESS)\t", "Add new order success")
+			return
+		} else {
+			SendMessageOnlyResponse(w, "Room already booked")
+			return
+		}
+	}
+
+	// Order tour
+	if tourScheduleId != "" {
+
+		// Query order
+		_, errQuery := db.Exec("INSERT INTO orders(user_id, tourschedule_id, transaction_type) values (?,?,?)", userId, tourScheduleId, transactionType)
+
+		if errQuery != nil {
+			log.Println("(ERROR)\t", errQuery)
 			SendErrorResponse(w, 400)
 			return
 		} else {
-			log.Println(errQuery2)
-			SendErrorResponse(w, 400)
+			SendSuccessResponse(w)
+			log.Println("(SUCCESS)\t", "Add new order success")
 			return
-
 		}
-	} else {
-		SendMessageOnlyResponse(w, "Seat already booked")
-		return
 	}
 }
 
+// func AddNewBusOrder(w http.ResponseWriter, r *http.Request) {
+// 	// Connect to database
+// 	db := Connect()
+// 	defer db.Close()
+
+// 	// Get value from form
+// 	err := r.ParseForm()
+// 	if err != nil {
+// 		return
+// 	}
+// }
+
+// func AddNewTrainOrder(w http.ResponseWriter, r *http.Request) {
+// 	// Connect to database
+// 	db := Connect()
+// 	defer db.Close()
+
+// 	// Get value from form
+// 	err := r.ParseForm()
+// 	if err != nil {
+// 		SendErrorResponse(w, 500)
+// 		log.Println(err)
+// 		return
+// 	}
+// 	userId := GetIdFromCookie(r)
+// 	seatId := r.Form.Get("seatId")
+// 	transactionType := r.Form.Get("transactionType")
+// 	// Query order & update seat_status
+// 	_, errQuery1 := db.Exec("INSERT INTO orders(user_id, seat_id, transaction_type) values (?,?,?)", userId, seatId, transactionType)
+// 	_, errQuery2 := db.Exec("UPDATE seats SET seat_status = 1 WHERE seat_id = ", seatId)
+
+// 	if errQuery1 == nil && errQuery2 == nil {
+// 		SendSuccessResponse(w)
+// 	} else if errQuery1 != nil {
+// 		log.Println(errQuery1)
+// 		SendErrorResponse(w, 400)
+// 		return
+// 	} else {
+// 		log.Println(errQuery2)
+// 		SendErrorResponse(w, 400)
+// 		return
+// 	}
+// }
+
+// func AddNewFlightOrder(w http.ResponseWriter, r *http.Request) {
+
+// 	// Connect to database
+// 	db := Connect()
+// 	defer db.Close()
+
+// 	// Get value from form
+// 	err := r.ParseForm()
+// 	if err != nil {
+// 		SendErrorResponse(w, 500)
+// 		log.Println(err)
+// 		return
+// 	}
+// 	userId := GetIdFromCookie(r)
+// 	seatId := r.Form.Get("seatId")
+// 	transactionType := r.Form.Get("transactionType")
+
+// 	// Check seat_id
+// 	row := db.QueryRow("SELECT seat_status FROM seats WHERE seat_id=?", seatId)
+// 	var seatType int
+// 	if err := row.Scan(&seatType); err != nil {
+// 		SendErrorResponse(w, 400)
+// 		log.Print(err)
+// 		return
+// 	}
+
+// 	if seatType == 0 {
+
+// 		// Query order & update seat_status
+// 		_, errQuery1 := db.Exec("INSERT INTO orders(user_id, seat_id, transaction_type) values (?,?,?)", userId, seatId, transactionType)
+// 		_, errQuery2 := db.Exec("UPDATE seats SET seat_status = 1 WHERE seat_id = ?", seatId)
+
+// 		if errQuery1 == nil && errQuery2 == nil {
+// 			SendSuccessResponse(w)
+// 		} else if errQuery1 != nil {
+// 			log.Println(errQuery1)
+// 			SendErrorResponse(w, 400)
+// 			return
+// 		} else {
+// 			log.Println(errQuery2)
+// 			SendErrorResponse(w, 400)
+// 			return
+// 		}
+// 	} else {
+// 		SendMessageOnlyResponse(w, "Seat already booked")
+// 		return
+// 	}
+// }
+
 func GetUserOrder(w http.ResponseWriter, r *http.Request) {
+
+	// Connect to database
 	db := Connect()
 	defer db.Close()
 
+	// Get value from cookie
 	userId := GetIdFromCookie(r)
 
+	// Query
 	rows, errQuery := db.Query("SELECT * FROM orders WHERE user_id=?", userId)
 	if errQuery != nil {
-		SendErrorResponse(w, 400)
+		log.Println("(ERROR)\t", errQuery)
+		SendErrorResponse(w, 500)
 		return
 	}
 
+	// Set value
 	var order models.Orders
 	var orders []models.Orders
 
 	for rows.Next() {
 		if err := rows.Scan(&order.ID, &order.UserID, &order.SeatID, &order.RoomID, &order.TourScheduleID, &order.OrderDate, &order.OrderStatus, &order.TransactionType); err != nil {
-			log.Println(err.Error())
+			log.Println("(ERROR)\t", err)
+			SendErrorResponse(w, 500)
 			return
-		} else {
-			orders = append(orders, order)
 		}
+		orders = append(orders, order)
 	}
 
+	// Response
 	var response models.OrdersResponse
 
 	if len(orders) == 0 {
+		log.Println("(ERROR)\t", "Data empty")
 		SendErrorResponse(w, 204)
-		return
 	} else {
 		response.Status = 200
 		response.Message = "Success Get Data"
 		response.Data = orders
+
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(response)
+
+		log.Println("(SUCCESS)\t", "Get user order request")
 	}
 }
 
 func RequestRefund(w http.ResponseWriter, r *http.Request) {
+
+	// Connect to database
 	db := Connect()
 	defer db.Close()
 
-	err := r.ParseForm()
-	if err != nil {
-		return
-	}
-	userId := GetIdFromCookie(r)
-	orderId := r.Form.Get("orderId")
+	// Get value from form
+	orderId := r.FormValue("orderId")
 
-	_, errQuery := db.Exec("UPDATE orders SET order_status = 'refund' WHERE order_id=? AND user_id=?", orderId, userId)
+	// Get value from cookie
+	userId := GetIdFromCookie(r)
+
+	// Query
+	_, errQuery := db.Exec("UPDATE orders SET order_status = 'refund' WHERE order_id = ? AND user_id = ?", orderId, userId)
 
 	if errQuery != nil {
+		log.Println("(ERROR)\t", errQuery)
 		SendErrorResponse(w, 400)
 	} else {
 		SendSuccessResponse(w)
+		log.Println("(SUCCESS)\t", "Refund request")
+	}
+}
+
+func SendReceipt() {
+
+	m := gomail.NewMessage()
+
+	// Get value from env
+	emailSender := LoadEnv("EMAIL_SENDER")
+	emailReceiver := LoadEnv("EMAIL_RECEIVER")
+	emailPassword := LoadEnv("EMAIL_PASS")
+
+	// Set email content
+	m.SetHeader("From", emailSender)
+	m.SetHeader("To", emailReceiver)
+	m.SetHeader("Subject", "Travelokay Order Receipt")
+
+	text := "<h1>Your Purchase Receipt</h1></br>" +
+		"<p>You have made a purchase via Traveloka app with the following details:</p>"
+	m.SetBody("text/html", text)
+
+	d := gomail.NewDialer("smtp.gmail.com", 465, emailSender, emailPassword)
+
+	// Send the email
+	if err := d.DialAndSend(m); err != nil {
+		log.Println(err)
 	}
 }

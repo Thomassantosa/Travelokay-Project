@@ -12,7 +12,7 @@ import (
 // Get value from env
 var stringKey = LoadEnv("JWT_KEY")
 var jwtKey = []byte(stringKey)
-var tokenName = "token"
+var tokenName = "loginToken"
 
 type Claims struct {
 	ID       int    `json:"id"`
