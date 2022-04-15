@@ -33,9 +33,9 @@
 | 18 | /user/order 	    | User		  | PUT	      | done      |
 | 19 | /partner	        | All		    | POST		  | done      |
 | 20 | /partner	        | Partner	  | PUT		    | done      |
-| 21 | /partner/flight  | Partner	  | GET		    |           |
-| 22 | /partner/flight  | Partner	  | POST  	  |           |
-| 23 | /partner/flight  | Partner	  | DELETE	  |           |
+| 21 | /partner/flight  | Partner	  | GET		    | done      |
+| 22 | /partner/flight  | Partner	  | POST  	  | done      |
+| 23 | /partner/flight  | Partner	  | DELETE	  | done      |
 | 24 | /admin/refund    | Admin		  | GET		    | done      |
 | 25 | /admin/refund    | Admin		  | DELETE	  | done      |
 
