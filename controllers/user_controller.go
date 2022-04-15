@@ -18,6 +18,9 @@ func UpdateUser(w http.ResponseWriter, r *http.Request) {
 	db := Connect()
 	defer db.Close()
 
+	// Get value form cookie
+	userId := GetIdFromCookie(r)
+
 	// Get value from form
 	fullname := r.FormValue("fullname")
 	username := r.FormValue("username")
@@ -50,7 +53,6 @@ func UpdateUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	queryNew := query[:len(query)-1] // Delete last coma
-	userId := GetIdFromCookie(r)
 	queryNew += " WHERE user_id = " + strconv.Itoa(userId)
 
 	_, errQuery := db.Exec(queryNew)

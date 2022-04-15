@@ -273,6 +273,10 @@ func GetFlightList(w http.ResponseWriter, r *http.Request) {
 	destinationCity := r.URL.Query().Get("destinationCity")
 	seatType := r.URL.Query().Get("seatType")
 	departureDate := r.URL.Query().Get("departureDate")
+	log.Println(departureCity)
+	log.Println(destinationCity)
+	log.Println(seatType)
+	log.Println(departureDate)
 
 	// Query
 	query :=
