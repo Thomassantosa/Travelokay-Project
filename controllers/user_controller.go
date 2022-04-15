@@ -170,6 +170,11 @@ func AddNewOrder(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
+
+	if seatId == "" && roomId == "" && tourScheduleId == "" {
+		SendErrorResponse(w, 400)
+		return
+	}
 }
 
 // func AddNewBusOrder(w http.ResponseWriter, r *http.Request) {
