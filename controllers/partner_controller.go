@@ -109,7 +109,6 @@ func GetFlightPartnerList(w http.ResponseWriter, r *http.Request) {
 			` JOIN airlines ON airplanes.airline_id = airlines.airline_id` +
 			` JOIN airports AS airportA ON flights.departure_airport = airportA.airport_id` +
 			` JOIN airports AS airportB ON flights.destination_airport = airportB.airport_id` +
-			` JOIN seats ON flights.flight_id = seats.flight_id` +
 			` WHERE airlines.airline_name = ?` +
 			` GROUP BY flights.flight_id`
 

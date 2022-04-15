@@ -55,7 +55,7 @@ func ApproveRefund(w http.ResponseWriter, r *http.Request) {
 	}
 	orderId := r.Form.Get("orderId")
 
-	_, errQuery := db.Exec("DELETE FROM orders WHERE order_id=? AND order_status='refund'", orderId)
+	_, errQuery := db.Exec("DELETE FROM orders WHERE order_id=?", orderId)
 
 	if errQuery != nil {
 		SendErrorResponse(w, 400)
