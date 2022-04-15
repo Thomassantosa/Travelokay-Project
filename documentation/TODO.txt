@@ -11,33 +11,33 @@
 
 [Endpoint progress]
 
-| No | Endpoint	        | Access	  | Method	  | Progress  |
-|----| ---------------- | --------- | --------- | --------- |
-| 1  | /login	          | All		    | POST		  | done      |
-| 2  | /logout	        | All		    | GET		    | done      |
-| 3  | /user		        | All		    | POST		  | done      |
-| 4  | /user		        | User		  | PUT		    | done      |
-| 5  | /user/hotel	    | All		    | GET		    | done      |
-| 6  | /user/hotel/room | All		    | GET		    | done      |
-| 7  | /user/hotel/room | User		  | POST		  |ON PROGRESS|
-| 8  | /user/flight	    | All		    | GET		    | done      |
-| 9  | /user/flight	    | User		  | POST		  | done      |
-| 10 | /user/bus 	      | All		    | GET		    |ON PROGRESS|
-| 11 | /user/bus 	      | User		  | POST		  |ON PROGRESS|
-| 12 | /user/train	    | All		    | GET		    |ON PROGRESS|
-| 13 | /user/train	    | User		  | POST		  |testing    |
-| 14 | /user/tour	      | All		    | GET		    | done      |
-| 15 | /user/tourSchedule| All		  | GET		    | done      |
-| 16 | /user/tour	      | User		  | POST		  |ON PROGRESS|
-| 17 | /user/order	    | User		  | GET		    | done      |
-| 18 | /user/order 	    | User		  | PUT	      | done      |
-| 19 | /partner	        | All		    | POST		  | done      |
-| 20 | /partner	        | Partner	  | PUT		    | done      |
-| 21 | /partner/flight  | Partner	  | GET		    | done      |
-| 22 | /partner/flight  | Partner	  | POST  	  | done      |
-| 23 | /partner/flight  | Partner	  | DELETE	  | done      |
-| 24 | /admin/refund    | Admin		  | GET		    | done      |
-| 25 | /admin/refund    | Admin		  | DELETE	  | done      |
+| No | Endpoint	          | Access	  | Method	  | Progress  |
+|----| ------------------ | --------- | --------- | --------- |
+| 1  | /login	            | All		    | POST		  | done      |
+| 2  | /logout	          | All		    | GET		    | done      |
+| 3  | /user		          | All		    | POST		  | done      |
+| 4  | /user		          | User		  | PUT		    | done      |
+| 5  | /user/hotel	      | All		    | GET		    | done      |
+| 6  | /user/hotel/room   | All		    | GET		    | done      |
+| 7  | /user/hotel/room   | User		  | POST		  | done      |
+| 8  | /user/flight	      | All		    | GET		    | done      |
+| 9  | /user/flight	      | User		  | POST		  | done      |
+| 10 | /user/bus 	        | All		    | GET		    | done      |
+| 11 | /user/bus 	        | User		  | POST		  | done      |
+| 12 | /user/train	      | All		    | GET		    | done      |
+| 13 | /user/train	      | User		  | POST		  | done      |
+| 14 | /user/tour	        | All		    | GET		    | done      |
+| 15 | /user/tourSchedule | All		    | GET		    | done      |
+| 16 | /user/tour	        | User		  | POST		  | done      |
+| 17 | /user/order	      | User		  | GET		    | done      |
+| 18 | /user/order 	      | User		  | PUT	      | done      |
+| 19 | /partner	          | All		    | POST		  | done      |
+| 20 | /partner	          | Partner	  | PUT		    | done      |
+| 21 | /partner/flight    | Partner	  | GET		    | done      |
+| 22 | /partner/flight    | Partner	  | POST  	  | done      |
+| 23 | /partner/flight    | Partner	  | DELETE	  |ON PROGRESS|
+| 24 | /admin/refund      | Admin		  | GET		    | done      |
+| 25 | /admin/refund      | Admin		  | DELETE	  |ON PROGRESS|
 
 
 
