@@ -25,7 +25,7 @@
 | 10 | /user/bus 	      | All		    | GET		    |ON PROGRESS|
 | 11 | /user/bus 	      | User		  | POST		  |ON PROGRESS|
 | 12 | /user/train	    | All		    | GET		    |ON PROGRESS|
-| 13 | /user/train	    | User		  | POST		  |ON PROGRESS|
+| 13 | /user/train	    | User		  | POST		  |testing    |
 | 14 | /user/tour	      | All		    | GET		    | done      |
 | 15 | /user/tourSchedule| All		  | GET		    | done      |
 | 16 | /user/tour	      | User		  | POST		  |ON PROGRESS|
