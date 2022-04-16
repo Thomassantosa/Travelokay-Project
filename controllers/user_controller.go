@@ -9,7 +9,6 @@ import (
 	"strconv"
 
 	models "github.com/Travelokay-Project/models"
-	gomail "gopkg.in/gomail.v2"
 )
 
 func UpdateUser(w http.ResponseWriter, r *http.Request) {
@@ -339,31 +338,5 @@ func RequestRefund(w http.ResponseWriter, r *http.Request) {
 	} else {
 		SendSuccessResponse(w)
 		log.Println("(SUCCESS)\t", "Refund request")
-	}
-}
-
-func SendReceipt() {
-
-	m := gomail.NewMessage()
-
-	// Get value from env
-	emailSender := LoadEnv("EMAIL_SENDER")
-	emailReceiver := LoadEnv("EMAIL_RECEIVER")
-	emailPassword := LoadEnv("EMAIL_PASS")
-
-	// Set email content
-	m.SetHeader("From", emailSender)
-	m.SetHeader("To", emailReceiver)
-	m.SetHeader("Subject", "Travelokay Order Receipt")
-
-	text := "<h1>Your Purchase Receipt</h1></br>" +
-		"<p>You have made a purchase via Traveloka app with the following details:</p>"
-	m.SetBody("text/html", text)
-
-	d := gomail.NewDialer("smtp.gmail.com", 465, emailSender, emailPassword)
-
-	// Send the email
-	if err := d.DialAndSend(m); err != nil {
-		log.Println(err)
 	}
 }
