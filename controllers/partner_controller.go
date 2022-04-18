@@ -9,7 +9,6 @@ import (
 	"strconv"
 
 	"github.com/Travelokay-Project/models"
-	"github.com/gorilla/mux"
 )
 
 func UpdatePartner(w http.ResponseWriter, r *http.Request) {
@@ -156,6 +155,8 @@ func GetFlightPartnerList(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(response)
+
+	log.Println("(SUCCESS)\t", "Get list flights request")
 }
 
 func AddNewFlight(w http.ResponseWriter, r *http.Request) {
@@ -189,10 +190,11 @@ func AddNewFlight(w http.ResponseWriter, r *http.Request) {
 
 	_, errQuery := db.Exec(query, airplaneId, departureAirport, destinationAirport, flightType, flightNumber, departureTime, arrivalTime, travelTime)
 	if errQuery != nil {
-		log.Println(errQuery)
+		log.Println("(ERROR)\t", errQuery)
 		SendErrorResponse(w, 400)
 		return
 	} else {
+		log.Println("(SUCCESS)\t", "Add new flight request")
 		SendSuccessResponse(w)
 		return
 	}
@@ -211,16 +213,49 @@ func DeleteFlight(w http.ResponseWriter, r *http.Request) {
 		log.Println(err)
 		return
 	}
-	vars := mux.Vars(r)
-	flightId := vars["flightId"]
-	//flightId, _ := strconv.Atoi(r.Form.Get("flightId"))
 
-	log.Println(flightId)
+	//Pakai Params
+	flightId := r.FormValue("flightId")
+
 	_, errQuery := db.Exec("DELETE FROM flights WHERE flight_id = ?", flightId)
 
 	if errQuery != nil {
+		log.Println("(ERROR)\t", errQuery)
 		SendErrorResponse(w, 400)
 	} else {
+		log.Println("(SUCCESS)\t", "Delete flight request")
 		SendSuccessResponse(w)
 	}
+}
+
+func AddNewAirline(w http.ResponseWriter, r *http.Request) {
+
+	// Connect to database
+	db := Connect()
+	defer db.Close()
+
+	// Get value from form
+	err := r.ParseForm()
+	if err != nil {
+		SendErrorResponse(w, 500)
+		log.Println("(ERROR)\t", err)
+		return
+	}
+
+	airlineName := r.Form.Get("airlineName")
+	airlineContact := r.Form.Get("airlineContact")
+
+	query := "INSERT INTO airlines(airline_name, airline_contact) VALUES (?,?)"
+
+	_, errQuery := db.Exec(query, airlineName, airlineContact)
+	if errQuery != nil {
+		log.Println("(ERROR)\t", errQuery)
+		SendErrorResponse(w, 400)
+		return
+	} else {
+		log.Println("(SUCCESS)\t", "Add new airline request")
+		SendSuccessResponse(w)
+		return
+	}
+
 }
