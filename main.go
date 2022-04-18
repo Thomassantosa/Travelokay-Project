@@ -41,6 +41,7 @@ func main() {
 
 	//Tambahan Function, Nanti dirubah lagi endpointnya kalo salah.
 	router.HandleFunc("/partner/airline", controllers.Authenticate(controllers.AddNewAirline, 2)).Methods("POST")
+	router.HandleFunc("/partner/airplane", controllers.Authenticate(controllers.AddNewAirplane, 2)).Methods("POST")
 
 	router.HandleFunc("/admin/refund", controllers.Authenticate(controllers.GetRefundList, 0)).Methods("GET")
 	router.HandleFunc("/admin/refund", controllers.Authenticate(controllers.ApproveRefund, 0)).Methods("DELETE")
