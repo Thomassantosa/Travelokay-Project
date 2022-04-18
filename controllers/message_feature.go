@@ -58,52 +58,50 @@ func SendReceipt(emailReceiver string, newOrder models.Order, price int) {
 	}
 }
 func OfferMail() {
+
 	// Connect to database
 	db := Connect()
 	defer db.Close()
 
-	m := gomail.NewMessage()
-
 	// Get value from env
 	emailSender := LoadEnv("EMAIL_SENDER")
 	emailPassword := LoadEnv("EMAIL_PASS")
-	rows, errQuery := db.Query("SELECT fullname, email FROM users")
+	rows, errQuery := db.Query("SELECT email FROM users")
 	if errQuery != nil {
 		log.Fatal(errQuery)
 		return
 	}
-	var user models.User
-	var emailReceiver []string
-	i := 0
+	var email string
 	defer rows.Close()
 	for rows.Next() {
-		if err := rows.Scan(&user.Fullname, &user.Email); err != nil {
+		if err := rows.Scan(&email); err != nil {
 			log.Fatal(errQuery)
 			return
 		}
-		emailReceiver[i] = m.FormatAddress(user.Email, user.Fullname)
-		i++
-	}
-	// Set email content
-	m.SetHeader("From", emailSender)
-	m.SetHeader("To", emailReceiver...)
-	m.SetHeader("Subject", "Flash Sale Promo")
 
-	text := "<h1>Here Is Your Best Deal Offer</h1></br>" +
-		"<p><a href='#'>click here</a> to see your deal</p>"
-	m.SetBody("text/html", text)
+		m := gomail.NewMessage()
 
-	d := gomail.NewDialer("smtp.gmail.com", 465, emailSender, emailPassword)
+		// Set email content
+		m.SetHeader("From", emailSender)
+		m.SetHeader("To", email)
+		m.SetHeader("Subject", "Flash Sale Promo")
 
-	// Send the email
-	if err := d.DialAndSend(m); err != nil {
-		log.Println(err)
+		text := "<h1>Here Is Your Best Deal Offer</h1></br>" +
+			"<p><a href='https://github.com/nicholasrussel/PBP-API-Tools-1120003-1120011-1120027-1120037-1120043/blob/master/Photo%201.jpeg'>click here</a> to see your deal</p>"
+		m.SetBody("text/html", text)
+
+		d := gomail.NewDialer("smtp.gmail.com", 465, emailSender, emailPassword)
+
+		// Send the email
+		if err := d.DialAndSend(m); err != nil {
+			log.Println(err)
+		}
 	}
 }
 
 func GocronEvent() {
 	s := gocron.NewScheduler(time.UTC)
-	s.Every(5).Minute().Do(OfferMail)
+	s.Every(1).Minute().Do(OfferMail)
 	s.Every(1).MonthLastDay().Do(OfferMail)
 
 	// starts the scheduler asynchronously
