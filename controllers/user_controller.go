@@ -93,7 +93,7 @@ func AddNewOrder(w http.ResponseWriter, r *http.Request) {
 		if seatStatus == 0 {
 
 			// Query order & update seat_status
-			_, errQuery1 := db.Exec("INSERT INTO orders(user_id, seat_id, transaction_type) values (?,?,?)", userId, seatId, transactionType)
+			result, errQuery1 := db.Exec("INSERT INTO orders(user_id, seat_id, transaction_type) values (?,?,?)", userId, seatId, transactionType)
 			_, errQuery2 := db.Exec("UPDATE seats SET seat_status = 1 WHERE seat_id = ?", seatId)
 
 			if errQuery1 != nil {
@@ -106,6 +106,36 @@ func AddNewOrder(w http.ResponseWriter, r *http.Request) {
 				SendErrorResponse(w, 500)
 				return
 			}
+
+			// Set value for receipt
+			row := db.QueryRow("SELECT email FROM users WHERE user_id = ?", userId)
+			var email string
+			if err := row.Scan(&email); err != nil {
+				log.Print("(ERROR)\t", err)
+				SendErrorResponse(w, 500)
+				return
+			}
+
+			orderId, _ := result.LastInsertId()
+			row2 := db.QueryRow("SELECT * FROM orders WHERE order_id = ?", orderId)
+			var newOrder models.Order
+			if err := row2.Scan(&newOrder.ID, &newOrder.UserID, &newOrder.SeatID, &newOrder.RoomID, &newOrder.TourScheduleID, &newOrder.OrderDate, &newOrder.OrderStatus, &newOrder.TransactionType); err != nil {
+				log.Print("(ERROR)\t", err)
+				SendErrorResponse(w, 500)
+				return
+			}
+
+			var price int
+			row3 := db.QueryRow("SELECT seat_price FROM seats WHERE seat_id = ?", seatId)
+			if err := row3.Scan(&price); err != nil {
+				log.Print("(ERROR)\t", err)
+				SendErrorResponse(w, 500)
+				return
+			}
+
+			// Send email receipt using Goroutine
+			go SendReceipt(email, newOrder, price)
+
 			SendSuccessResponse(w)
 			log.Println("(SUCCESS)\t", "Add new order success")
 			return
@@ -131,7 +161,7 @@ func AddNewOrder(w http.ResponseWriter, r *http.Request) {
 		if roomStatus == 0 {
 
 			// Query order & update seat_status
-			_, errQuery1 := db.Exec("INSERT INTO orders(user_id, room_id, transaction_type) values (?,?,?)", userId, roomId, transactionType)
+			result, errQuery1 := db.Exec("INSERT INTO orders(user_id, room_id, transaction_type) values (?,?,?)", userId, roomId, transactionType)
 			_, errQuery2 := db.Exec("UPDATE rooms SET room_status = 1 WHERE room_id = ?", roomId)
 
 			if errQuery1 != nil {
@@ -144,6 +174,36 @@ func AddNewOrder(w http.ResponseWriter, r *http.Request) {
 				SendErrorResponse(w, 500)
 				return
 			}
+
+			// Set value for receipt
+			row := db.QueryRow("SELECT email FROM users WHERE user_id = ?", userId)
+			var email string
+			if err := row.Scan(&email); err != nil {
+				log.Print("(ERROR)\t", err)
+				SendErrorResponse(w, 500)
+				return
+			}
+
+			orderId, _ := result.LastInsertId()
+			row2 := db.QueryRow("SELECT * FROM orders WHERE order_id = ?", orderId)
+			var newOrder models.Order
+			if err := row2.Scan(&newOrder.ID, &newOrder.UserID, &newOrder.SeatID, &newOrder.RoomID, &newOrder.TourScheduleID, &newOrder.OrderDate, &newOrder.OrderStatus, &newOrder.TransactionType); err != nil {
+				log.Print("(ERROR)\t", err)
+				SendErrorResponse(w, 500)
+				return
+			}
+
+			var price int
+			row3 := db.QueryRow("SELECT room_price FROM rooms WHERE room_id = ?", roomId)
+			if err := row3.Scan(&price); err != nil {
+				log.Print("(ERROR)\t", err)
+				SendErrorResponse(w, 500)
+				return
+			}
+
+			// Send email receipt using Goroutine
+			go SendReceipt(email, newOrder, price)
+
 			SendSuccessResponse(w)
 			log.Println("(SUCCESS)\t", "Add new order success")
 			return
@@ -157,17 +217,46 @@ func AddNewOrder(w http.ResponseWriter, r *http.Request) {
 	if tourScheduleId != "" {
 
 		// Query order
-		_, errQuery := db.Exec("INSERT INTO orders(user_id, tourschedule_id, transaction_type) values (?,?,?)", userId, tourScheduleId, transactionType)
+		result, errQuery := db.Exec("INSERT INTO orders(user_id, tourschedule_id, transaction_type) values (?,?,?)", userId, tourScheduleId, transactionType)
 
 		if errQuery != nil {
 			log.Println("(ERROR)\t", errQuery)
 			SendErrorResponse(w, 400)
 			return
-		} else {
-			SendSuccessResponse(w)
-			log.Println("(SUCCESS)\t", "Add new order success")
+		}
+
+		// Set value for receipt
+		row := db.QueryRow("SELECT email FROM users WHERE user_id = ?", userId)
+		var email string
+		if err := row.Scan(&email); err != nil {
+			log.Print("(ERROR)\t", err)
+			SendErrorResponse(w, 500)
 			return
 		}
+
+		orderId, _ := result.LastInsertId()
+		row2 := db.QueryRow("SELECT * FROM orders WHERE order_id = ?", orderId)
+		var newOrder models.Order
+		if err := row2.Scan(&newOrder.ID, &newOrder.UserID, &newOrder.SeatID, &newOrder.RoomID, &newOrder.TourScheduleID, &newOrder.OrderDate, &newOrder.OrderStatus, &newOrder.TransactionType); err != nil {
+			log.Print("(ERROR)\t", err)
+			SendErrorResponse(w, 500)
+			return
+		}
+
+		var price int
+		row3 := db.QueryRow("SELECT price FROM tourschedules WHERE schedule_id = ?", tourScheduleId)
+		if err := row3.Scan(&price); err != nil {
+			log.Print("(ERROR)\t", err)
+			SendErrorResponse(w, 500)
+			return
+		}
+
+		// Send email receipt using Goroutine
+		go SendReceipt(email, newOrder, price)
+
+		SendSuccessResponse(w)
+		log.Println("(SUCCESS)\t", "Add new order success")
+		return
 	}
 
 	if seatId == "" && roomId == "" && tourScheduleId == "" {
@@ -175,99 +264,6 @@ func AddNewOrder(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 }
-
-// func AddNewBusOrder(w http.ResponseWriter, r *http.Request) {
-// 	// Connect to database
-// 	db := Connect()
-// 	defer db.Close()
-
-// 	// Get value from form
-// 	err := r.ParseForm()
-// 	if err != nil {
-// 		return
-// 	}
-// }
-
-// func AddNewTrainOrder(w http.ResponseWriter, r *http.Request) {
-// 	// Connect to database
-// 	db := Connect()
-// 	defer db.Close()
-
-// 	// Get value from form
-// 	err := r.ParseForm()
-// 	if err != nil {
-// 		SendErrorResponse(w, 500)
-// 		log.Println(err)
-// 		return
-// 	}
-// 	userId := GetIdFromCookie(r)
-// 	seatId := r.Form.Get("seatId")
-// 	transactionType := r.Form.Get("transactionType")
-// 	// Query order & update seat_status
-// 	_, errQuery1 := db.Exec("INSERT INTO orders(user_id, seat_id, transaction_type) values (?,?,?)", userId, seatId, transactionType)
-// 	_, errQuery2 := db.Exec("UPDATE seats SET seat_status = 1 WHERE seat_id = ", seatId)
-
-// 	if errQuery1 == nil && errQuery2 == nil {
-// 		SendSuccessResponse(w)
-// 	} else if errQuery1 != nil {
-// 		log.Println(errQuery1)
-// 		SendErrorResponse(w, 400)
-// 		return
-// 	} else {
-// 		log.Println(errQuery2)
-// 		SendErrorResponse(w, 400)
-// 		return
-// 	}
-// }
-
-// func AddNewFlightOrder(w http.ResponseWriter, r *http.Request) {
-
-// 	// Connect to database
-// 	db := Connect()
-// 	defer db.Close()
-
-// 	// Get value from form
-// 	err := r.ParseForm()
-// 	if err != nil {
-// 		SendErrorResponse(w, 500)
-// 		log.Println(err)
-// 		return
-// 	}
-// 	userId := GetIdFromCookie(r)
-// 	seatId := r.Form.Get("seatId")
-// 	transactionType := r.Form.Get("transactionType")
-
-// 	// Check seat_id
-// 	row := db.QueryRow("SELECT seat_status FROM seats WHERE seat_id=?", seatId)
-// 	var seatType int
-// 	if err := row.Scan(&seatType); err != nil {
-// 		SendErrorResponse(w, 400)
-// 		log.Print(err)
-// 		return
-// 	}
-
-// 	if seatType == 0 {
-
-// 		// Query order & update seat_status
-// 		_, errQuery1 := db.Exec("INSERT INTO orders(user_id, seat_id, transaction_type) values (?,?,?)", userId, seatId, transactionType)
-// 		_, errQuery2 := db.Exec("UPDATE seats SET seat_status = 1 WHERE seat_id = ?", seatId)
-
-// 		if errQuery1 == nil && errQuery2 == nil {
-// 			SendSuccessResponse(w)
-// 		} else if errQuery1 != nil {
-// 			log.Println(errQuery1)
-// 			SendErrorResponse(w, 400)
-// 			return
-// 		} else {
-// 			log.Println(errQuery2)
-// 			SendErrorResponse(w, 400)
-// 			return
-// 		}
-// 	} else {
-// 		SendMessageOnlyResponse(w, "Seat already booked")
-// 		return
-// 	}
-// }
 
 func GetUserOrder(w http.ResponseWriter, r *http.Request) {
 
@@ -287,11 +283,11 @@ func GetUserOrder(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Set value
-	var order models.Orders
-	var orders []models.Orders
+	var order models.Order
+	var orders []models.Order
 
 	for rows.Next() {
-		if err := rows.Scan(&order.Order_id, &order.UserID, &order.SeatID, &order.RoomID, &order.TourScheduleID, &order.OrderDate, &order.OrderStatus, &order.TransactionType); err != nil {
+		if err := rows.Scan(&order.ID, &order.UserID, &order.SeatID, &order.RoomID, &order.TourScheduleID, &order.OrderDate, &order.OrderStatus, &order.TransactionType); err != nil {
 			log.Println("(ERROR)\t", err)
 			SendErrorResponse(w, 500)
 			return

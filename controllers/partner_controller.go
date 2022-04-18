@@ -235,6 +235,8 @@ func DeleteFlight(w http.ResponseWriter, r *http.Request) {
 }
 
 func CheckFlightInOrder(w http.ResponseWriter, r *http.Request, flightId string) bool {
+
+	// Connect to database
 	db := Connect()
 	defer db.Close()
 
@@ -311,7 +313,8 @@ func AddNewAirplane(w http.ResponseWriter, r *http.Request) {
 
 	//Check if airline is already
 	if !CheckAirlineAlready(w, r, airlineId) {
-		log.Println("Data airplane tidak ada")
+		log.Println("(ERROR)\t", "Airline not found")
+		SendMessageOnlyResponse(w, "Airline not found")
 		return
 	}
 
