@@ -12,7 +12,11 @@ require (
 )
 
 require (
+	github.com/jinzhu/inflection v1.0.0 // indirect
+	github.com/jinzhu/now v1.1.5 // indirect
 	github.com/robfig/cron/v3 v3.0.1 // indirect
 	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c // indirect
 	gopkg.in/alexcesaro/quotedprintable.v3 v3.0.0-20150716171945-2caba252f4dc // indirect
+	gorm.io/driver/mysql v1.3.3 // indirect
+	gorm.io/gorm v1.23.4 // indirect
 )
