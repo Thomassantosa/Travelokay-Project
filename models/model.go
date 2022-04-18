@@ -132,7 +132,7 @@ type Tours struct {
 }
 
 type Orders struct {
-	ID              int           `json:"order_id"`
+	Order_id        int           `json:"order_id"`
 	UserID          int           `json:"user_id"`
 	SeatID          sql.NullInt64 `json:"seat_id"`
 	RoomID          sql.NullInt64 `json:"room_id"`

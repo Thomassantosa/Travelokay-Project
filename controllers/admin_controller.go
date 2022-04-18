@@ -26,7 +26,7 @@ func GetRefundList(w http.ResponseWriter, r *http.Request) {
 	var orders []models.Orders
 
 	for rows.Next() {
-		if err := rows.Scan(&order.ID, &order.UserID, &order.SeatID, &order.RoomID, &order.TourScheduleID, &order.OrderDate, &order.OrderStatus, &order.TransactionType); err != nil {
+		if err := rows.Scan(&order.Order_id, &order.UserID, &order.SeatID, &order.RoomID, &order.TourScheduleID, &order.OrderDate, &order.OrderStatus, &order.TransactionType); err != nil {
 			log.Println(err.Error())
 		} else {
 			orders = append(orders, order)
@@ -46,20 +46,32 @@ func GetRefundList(w http.ResponseWriter, r *http.Request) {
 }
 
 func ApproveRefund(w http.ResponseWriter, r *http.Request) {
-	db := Connect()
-	defer db.Close()
+	//Connect database via Gorm
+	db := ConnectGorm()
 
-	err := r.ParseForm()
-	if err != nil {
+	//Connect database via MySql
+	dbSql := Connect()
+	defer dbSql.Close()
+
+	//Get value from form
+	orderId := r.FormValue("orderId")
+	log.Println("Hasil :" + orderId)
+	//Query
+	row := dbSql.QueryRow("SELECT order_status FROM orders WHERE order_id = ?", orderId)
+	var orderStatus string
+	if err := row.Scan(&orderStatus); err != nil {
+		log.Print("(ERROR)\t", err)
+		SendErrorResponse(w, 500)
 		return
 	}
-	orderId := r.Form.Get("orderId")
-
-	_, errQuery := db.Exec("DELETE FROM orders WHERE order_id=?", orderId)
-
-	if errQuery != nil {
+	log.Println("Status : " + orderStatus)
+	if orderStatus != "refund" {
 		SendErrorResponse(w, 400)
-	} else {
-		SendSuccessResponse(w)
+		log.Println("a")
+		return
 	}
+
+	//Query using gorm
+	db.Delete(&models.Orders{}, orderId)
+	SendSuccessResponse(w)
 }
