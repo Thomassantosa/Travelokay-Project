@@ -42,6 +42,8 @@ func main() {
 	router.HandleFunc("/admin/refund", controllers.Authenticate(controllers.GetRefundList, 0)).Methods("GET")
 	router.HandleFunc("/admin/refund", controllers.Authenticate(controllers.ApproveRefund, 0)).Methods("DELETE")
 
+	controllers.GocronEvent()
+
 	svrPort := controllers.LoadEnv("SVR_PORT")
 	log.Println("Connected to port " + svrPort)
 	addr := ":" + svrPort
