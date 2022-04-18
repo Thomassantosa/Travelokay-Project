@@ -49,5 +49,9 @@ func main() {
 	svrPort := controllers.LoadEnv("SVR_PORT")
 	log.Println("Connected to port " + svrPort)
 	addr := ":" + svrPort
-	http.ListenAndServe(addr, router)
+	error := http.ListenAndServe(addr, router)
+	if error != nil {
+		log.Print(error)
+	}
+
 }
