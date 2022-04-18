@@ -218,6 +218,11 @@ func DeleteFlight(w http.ResponseWriter, r *http.Request) {
 	//Pakai Params
 	flightId := r.FormValue("flightId")
 
+	//Check if airline is already
+	if !CheckFlightInOrder(w, r, flightId) {
+		return
+	}
+
 	_, errQuery := db.Exec("DELETE FROM flights WHERE flight_id = ?", flightId)
 
 	if errQuery != nil {
@@ -227,6 +232,32 @@ func DeleteFlight(w http.ResponseWriter, r *http.Request) {
 		log.Println("(SUCCESS)\t", "Delete flight request")
 		SendSuccessResponse(w)
 	}
+}
+
+func CheckFlightInOrder(w http.ResponseWriter, r *http.Request, flightId string) bool {
+	db := Connect()
+	defer db.Close()
+
+	// Query
+	rows, errQuery := db.Query("SELECT flight_id FROM seats WHERE flight_id = ?", flightId)
+
+	if errQuery != nil {
+		log.Println("(ERROR)\t", errQuery)
+		SendErrorResponse(w, 500)
+		return false
+	}
+
+	var theFlightId int
+
+	for rows.Next() {
+		if err := rows.Scan(&theFlightId); err != nil {
+			log.Println("(ERROR)\t", err)
+			SendErrorResponse(w, 500)
+			return false
+		}
+	}
+
+	return true
 }
 
 func AddNewAirline(w http.ResponseWriter, r *http.Request) {
@@ -282,9 +313,6 @@ func AddNewAirplane(w http.ResponseWriter, r *http.Request) {
 	if !CheckAirlineAlready(w, r, airlineId) {
 		log.Println("Data airplane tidak ada")
 		return
-	} else {
-
-		log.Println("Data airplane ada")
 	}
 
 	query := "INSERT INTO airplanes(airline_id, airplane_model) VALUES (?,?)"
