@@ -291,7 +291,7 @@ func GetUserOrder(w http.ResponseWriter, r *http.Request) {
 	var orders []models.Orders
 
 	for rows.Next() {
-		if err := rows.Scan(&order.ID, &order.UserID, &order.SeatID, &order.RoomID, &order.TourScheduleID, &order.OrderDate, &order.OrderStatus, &order.TransactionType); err != nil {
+		if err := rows.Scan(&order.Order_id, &order.UserID, &order.SeatID, &order.RoomID, &order.TourScheduleID, &order.OrderDate, &order.OrderStatus, &order.TransactionType); err != nil {
 			log.Println("(ERROR)\t", err)
 			SendErrorResponse(w, 500)
 			return
