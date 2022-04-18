@@ -4,6 +4,7 @@ import (
 	"log"
 	"time"
 
+	"github.com/Travelokay-Project/models"
 	"github.com/go-co-op/gocron"
 	"gopkg.in/gomail.v2"
 )
@@ -34,13 +35,31 @@ func SendReceipt() {
 	}
 }
 func OfferMail(hari int) {
+	// Connect to database
+	db := Connect()
+	defer db.Close()
+
 	m := gomail.NewMessage()
 
 	// Get value from env
 	emailSender := LoadEnv("EMAIL_SENDER")
-	emailReceiver := LoadEnv("EMAIL_RECEIVER")
 	emailPassword := LoadEnv("EMAIL_PASS")
-
+	rows, errQuery := db.Query("SELECT email FROM users")
+	if errQuery != nil {
+		log.Fatal(errQuery)
+		return
+	}
+	var user models.User
+	var allEmail string
+	defer rows.Close()
+	for rows.Next() {
+		if err := rows.Scan(&user.Email); err != nil {
+			log.Fatal(errQuery)
+			return
+		}
+		allEmail += user.Email + ","
+	}
+	emailReceiver := allEmail[:len(allEmail)-1]
 	// Set email content
 	m.SetHeader("From", emailSender)
 	m.SetHeader("To", emailReceiver)
