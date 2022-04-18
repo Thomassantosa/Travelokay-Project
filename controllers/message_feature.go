@@ -67,25 +67,26 @@ func OfferMail(hari int) {
 	// Get value from env
 	emailSender := LoadEnv("EMAIL_SENDER")
 	emailPassword := LoadEnv("EMAIL_PASS")
-	rows, errQuery := db.Query("SELECT email FROM users")
+	rows, errQuery := db.Query("SELECT fullname, email FROM users")
 	if errQuery != nil {
 		log.Fatal(errQuery)
 		return
 	}
 	var user models.User
-	var allEmail string
+	var emailReceiver []string
+	i := 0
 	defer rows.Close()
 	for rows.Next() {
-		if err := rows.Scan(&user.Email); err != nil {
+		if err := rows.Scan(&user.Fullname, &user.Email); err != nil {
 			log.Fatal(errQuery)
 			return
 		}
-		allEmail += user.Email + ","
+		emailReceiver[i] = m.FormatAddress(user.Email, user.Fullname)
+		i++
 	}
-	emailReceiver := allEmail[:len(allEmail)-1]
 	// Set email content
 	m.SetHeader("From", emailSender)
-	m.SetHeader("To", emailReceiver)
+	m.SetHeader("To", emailReceiver...)
 	if hari == 0 {
 		m.SetHeader("Subject", "test aja")
 	}
@@ -111,13 +112,13 @@ func OfferMail(hari int) {
 
 func GocronEvent() {
 	s := gocron.NewScheduler(time.UTC)
-	s.Cron("* /1 * * * *").Do(OfferMail, 0)    // every minutes
-	s.Cron("* * * /2 /5 *").Do(OfferMail, 1)   // every idul fitri
-	s.Cron("* * * /25 /12 *").Do(OfferMail, 2) // every christmast
-	s.Cron("* * * /1 /1 *").Do(OfferMail, 3)   // every new year
+	s.Cron("*/5 * * * * *").Do(func() { log.Println("test") }) // every 5 sec
+	s.Cron("* * * /2 /5 *").Do(OfferMail, 1)                   // every idul fitri
+	s.Cron("* * * /25 /12 *").Do(OfferMail, 2)                 // every christmast
+	s.Cron("* * * /1 /1 *").Do(OfferMail, 3)                   // every new year
 
 	// starts the scheduler asynchronously
 	s.StartAsync()
 	// starts the scheduler and blocks current execution path
-	s.StartBlocking()
+	// s.StartBlocking()
 }

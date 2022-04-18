@@ -10,7 +10,7 @@ import (
 
 func main() {
 	log.Println("RUNNING ...")
-
+	controllers.GocronEvent()
 	router := mux.NewRouter()
 
 	router.HandleFunc("/login", controllers.Login).Methods("POST")
