@@ -37,7 +37,10 @@ func main() {
 	router.HandleFunc("/partner", controllers.Authenticate(controllers.UpdatePartner, 2)).Methods("PUT")
 	router.HandleFunc("/partner/flight", controllers.Authenticate(controllers.GetFlightPartnerList, 2)).Methods("GET")
 	router.HandleFunc("/partner/flight", controllers.Authenticate(controllers.AddNewFlight, 2)).Methods("POST")
-	router.HandleFunc("/partner/flight/{flightId}", controllers.Authenticate(controllers.DeleteFlight, 2)).Methods("DELETE")
+	router.HandleFunc("/partner/flight", controllers.Authenticate(controllers.DeleteFlight, 2)).Methods("DELETE")
+
+	//Tambahan Function, Nanti dirubah lagi endpointnya kalo salah.
+	router.HandleFunc("/partner/airline", controllers.Authenticate(controllers.AddNewAirline, 2)).Methods("POST")
 
 	router.HandleFunc("/admin/refund", controllers.Authenticate(controllers.GetRefundList, 0)).Methods("GET")
 	router.HandleFunc("/admin/refund", controllers.Authenticate(controllers.ApproveRefund, 0)).Methods("DELETE")
