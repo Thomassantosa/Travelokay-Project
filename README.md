@@ -25,5 +25,7 @@
 | 21 | /partner/flight      | Partner	| GET		| GetFlightPartnerList   	| FlightsResponse                   | Cek berdasarkan nama perusahaan partner.                                                              |
 | 22 | /partner/flight      | Partner	| POST  	| AddNewFlight   	        | FlightResponse                    | Cek berdasarkan nama perusahaan partner.                                                              |
 | 23 | /partner/flight      | Partner	| DELETE	| DeleteFlight   	        | MessageResponse                   | Cek berdasarkan nama perusahaan partner.                                                              |
-| 24 | /admin/refund        | Admin		| GET		| GetRefundList   	        | RefundsResponse                   | -                                                                                                     |
-| 25 | /admin/refund        | Admin		| DELETE	| ApproveRefund   	        | MessageResponse                   | -                                                                                                     |
+| 24 | /partner/airline     | Partner	| POST  	| AddNewAirline   	        | MessageResponse                   | -                                                                                                     |
+| 25 | /partner/airplane    | Partner	| POST  	| AddNewAirplane   	        | MessageResponse                   | -                                                                                                     |
+| 26 | /admin/refund        | Admin		| GET		| GetRefundList   	        | RefundsResponse                   | -                                                                                                     |
+| 27 | /admin/refund        | Admin		| DELETE	| ApproveRefund   	        | MessageResponse                   | -                                                                                                     |

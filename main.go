@@ -44,7 +44,7 @@ func main() {
 	router.HandleFunc("/partner/airplane", controllers.Authenticate(controllers.AddNewAirplane, 2)).Methods("POST")
 
 	router.HandleFunc("/admin/refund", controllers.Authenticate(controllers.GetRefundList, 0)).Methods("GET")
-	router.HandleFunc("/admin/refund", controllers.Authenticate(controllers.ApproveRefund, 0)).Methods("DELETE")
+	router.HandleFunc("/admin/refund/{orderId}", controllers.Authenticate(controllers.ApproveRefund, 0)).Methods("DELETE")
 
 	svrPort := controllers.LoadEnv("SVR_PORT")
 	log.Println("Connected to port " + svrPort)

@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"log"
+	"strconv"
 	"time"
 
 	"github.com/Travelokay-Project/models"
@@ -9,13 +10,12 @@ import (
 	"gopkg.in/gomail.v2"
 )
 
-func SendReceipt() {
+func SendReceipt(emailReceiver string, newOrder models.Order, price int) {
 
 	m := gomail.NewMessage()
 
 	// Get value from env
 	emailSender := LoadEnv("EMAIL_SENDER")
-	emailReceiver := LoadEnv("EMAIL_RECEIVER")
 	emailPassword := LoadEnv("EMAIL_PASS")
 
 	// Set email content
@@ -23,8 +23,31 @@ func SendReceipt() {
 	m.SetHeader("To", emailReceiver)
 	m.SetHeader("Subject", "Travelokay Order Receipt")
 
-	text := "<h1>Your Purchase Receipt</h1></br>" +
-		"<p>You have made a purchase via Traveloka app with the following details:</p>"
+	text := `<h1>Your Purchase Receipt</h1></br>
+		<p>You have made a purchase via Traveloka app with the following details:</p>
+		<table>
+		<tr>
+			<td><b>Order ID</b></td>
+			<td>: ` + strconv.Itoa(newOrder.ID) + `</td>
+		</tr>
+		<tr>
+			<td><b>Order date</b></td>
+			<td>: ` + newOrder.OrderDate + `</td>
+		</tr>
+		<tr>
+			<td><b>Order status</b></td>
+			<td>: ` + newOrder.OrderStatus + `</td>
+		</tr>
+		<tr>
+			<td><b>Transaction type</b></td>
+			<td>: ` + newOrder.TransactionType + `</td>
+		</tr>
+		<tr>
+			<td><b>Price</b></td>
+			<td>: ` + strconv.Itoa(price) + `</td>
+		</tr>
+		</table>`
+
 	m.SetBody("text/html", text)
 
 	d := gomail.NewDialer("smtp.gmail.com", 465, emailSender, emailPassword)

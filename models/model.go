@@ -142,6 +142,17 @@ type Orders struct {
 	TransactionType string        `json:"transaction_type"`
 }
 
+type Order struct {
+	ID              int           `json:"order_id"`
+	UserID          int           `json:"user_id"`
+	SeatID          sql.NullInt64 `json:"seat_id"`
+	RoomID          sql.NullInt64 `json:"room_id"`
+	TourScheduleID  sql.NullInt64 `json:"tourschedule_id"`
+	OrderDate       string        `json:"order_date"`
+	OrderStatus     string        `json:"order_status"`
+	TransactionType string        `json:"transaction_type"`
+}
+
 type ToursSchedule struct {
 	ID          int    `json:"schedule_id"`
 	TourID      int    `json:"tour_id"`
@@ -251,7 +262,7 @@ type SeatsResponse struct {
 	Data    []Seat `json:"data"`
 }
 type OrdersResponse struct {
-	Status  int      `json:"status"`
-	Message string   `json:"message"`
-	Data    []Orders `json:"data"`
+	Status  int     `json:"status"`
+	Message string  `json:"message"`
+	Data    []Order `json:"data"`
 }

@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	models "github.com/Travelokay-Project/models"
+	"github.com/gorilla/mux"
 )
 
 func GetRefundList(w http.ResponseWriter, r *http.Request) {
@@ -22,17 +23,18 @@ func GetRefundList(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var order models.Orders
-	var orders []models.Orders
+	var order models.Order
+	var orders []models.Order
 
 	for rows.Next() {
-		if err := rows.Scan(&order.Order_id, &order.UserID, &order.SeatID, &order.RoomID, &order.TourScheduleID, &order.OrderDate, &order.OrderStatus, &order.TransactionType); err != nil {
+		if err := rows.Scan(&order.ID, &order.UserID, &order.SeatID, &order.RoomID, &order.TourScheduleID, &order.OrderDate, &order.OrderStatus, &order.TransactionType); err != nil {
 			log.Println(err.Error())
 		} else {
 			orders = append(orders, order)
 		}
 	}
 
+	// Response
 	var response models.OrdersResponse
 	if len(orders) == 0 {
 		SendErrorResponse(w, 204)
@@ -46,6 +48,7 @@ func GetRefundList(w http.ResponseWriter, r *http.Request) {
 }
 
 func ApproveRefund(w http.ResponseWriter, r *http.Request) {
+
 	//Connect database via Gorm
 	db := ConnectGorm()
 
@@ -53,9 +56,11 @@ func ApproveRefund(w http.ResponseWriter, r *http.Request) {
 	dbSql := Connect()
 	defer dbSql.Close()
 
-	//Get value from form
-	orderId := r.FormValue("orderId")
+	//Get value from mux.Vars
+	vars := mux.Vars(r)
+	orderId := vars["userId"]
 	log.Println("Hasil :" + orderId)
+
 	//Query
 	row := dbSql.QueryRow("SELECT order_status FROM orders WHERE order_id = ?", orderId)
 	var orderStatus string
@@ -64,6 +69,7 @@ func ApproveRefund(w http.ResponseWriter, r *http.Request) {
 		SendErrorResponse(w, 500)
 		return
 	}
+
 	log.Println("Status : " + orderStatus)
 	if orderStatus != "refund" {
 		SendErrorResponse(w, 400)
@@ -73,5 +79,7 @@ func ApproveRefund(w http.ResponseWriter, r *http.Request) {
 
 	//Query using gorm
 	db.Delete(&models.Orders{}, orderId)
+
+	// Response
 	SendSuccessResponse(w)
 }
