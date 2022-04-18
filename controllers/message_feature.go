@@ -34,7 +34,7 @@ func SendReceipt() {
 		log.Println(err)
 	}
 }
-func OfferMail(hari int) {
+func OfferMail() {
 	// Connect to database
 	db := Connect()
 	defer db.Close()
@@ -64,16 +64,7 @@ func OfferMail(hari int) {
 	// Set email content
 	m.SetHeader("From", emailSender)
 	m.SetHeader("To", emailReceiver...)
-	if hari == 0 {
-		m.SetHeader("Subject", "test aja")
-	}
-	if hari == 1 {
-		m.SetHeader("Subject", "Idul Fitri Promotion Offer")
-	} else if hari == 2 {
-		m.SetHeader("Subject", "Christmast Promotion Offer")
-	} else if hari == 3 {
-		m.SetHeader("Subject", "New Year Promotion Offer")
-	}
+	m.SetHeader("Subject", "Flash Sale Promo")
 
 	text := "<h1>Here Is Your Best Deal Offer</h1></br>" +
 		"<p><a href='#'>click here</a> to see your deal</p>"
@@ -89,13 +80,9 @@ func OfferMail(hari int) {
 
 func GocronEvent() {
 	s := gocron.NewScheduler(time.UTC)
-	s.Cron("*/5 * * * * *").Do(func() { log.Println("test") }) // every 5 sec
-	s.Cron("* * * /2 /5 *").Do(OfferMail, 1)                   // every idul fitri
-	s.Cron("* * * /25 /12 *").Do(OfferMail, 2)                 // every christmast
-	s.Cron("* * * /1 /1 *").Do(OfferMail, 3)                   // every new year
+	s.Every(5).Minute().Do(OfferMail)
+	s.Every(1).MonthLastDay().Do(OfferMail)
 
 	// starts the scheduler asynchronously
 	s.StartAsync()
-	// starts the scheduler and blocks current execution path
-	// s.StartBlocking()
 }
