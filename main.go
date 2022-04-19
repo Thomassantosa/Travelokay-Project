@@ -39,7 +39,6 @@ func main() {
 	router.HandleFunc("/partner/flight", controllers.Authenticate(controllers.AddNewFlight, 2)).Methods("POST")
 	router.HandleFunc("/partner/flight", controllers.Authenticate(controllers.DeleteFlight, 2)).Methods("DELETE")
 
-	//Tambahan Function, Nanti dirubah lagi endpointnya kalo salah.
 	router.HandleFunc("/partner/airline", controllers.Authenticate(controllers.AddNewAirline, 2)).Methods("POST")
 	router.HandleFunc("/partner/airplane", controllers.Authenticate(controllers.AddNewAirplane, 2)).Methods("POST")
 
