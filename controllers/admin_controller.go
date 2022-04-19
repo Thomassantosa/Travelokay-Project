@@ -58,8 +58,7 @@ func ApproveRefund(w http.ResponseWriter, r *http.Request) {
 
 	//Get value from mux.Vars
 	vars := mux.Vars(r)
-	orderId := vars["userId"]
-	log.Println("Hasil :" + orderId)
+	orderId := vars["orderId"]
 
 	//Query
 	row := dbSql.QueryRow("SELECT order_status FROM orders WHERE order_id = ?", orderId)
@@ -70,7 +69,6 @@ func ApproveRefund(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	log.Println("Status : " + orderStatus)
 	if orderStatus != "refund" {
 		SendErrorResponse(w, 400)
 		log.Println("a")

@@ -18,7 +18,7 @@ func GetFlightPartnerList(w http.ResponseWriter, r *http.Request) {
 	defer db.Close()
 
 	userId := GetIdFromCookie(r)
-	userCompanyName := ""
+	var userCompanyName string
 
 	//Get Data Company Name Partner
 	queryGetCompanyName := "SELECT company_name FROM users WHERE user_id = ?"
@@ -181,10 +181,10 @@ func UpdatePartner(w http.ResponseWriter, r *http.Request) {
 		query += " address = '" + address + "',"
 	}
 	if partnerType != "" {
-		query += " address = '" + partnerType + "',"
+		query += " partner_type = '" + partnerType + "',"
 	}
 	if companyName != "" {
-		query += " address = '" + companyName + "',"
+		query += " company_name = '" + companyName + "',"
 	}
 
 	queryNew := query[:len(query)-1] // Delete last coma
@@ -330,11 +330,11 @@ func AddNewAirplane(w http.ResponseWriter, r *http.Request) {
 		SendSuccessResponse(w)
 		return
 	}
-
 }
 
 func CheckAirlineAlready(w http.ResponseWriter, r *http.Request, airlineId string) bool {
 
+	// Connect to database
 	db := Connect()
 	defer db.Close()
 
@@ -347,6 +347,7 @@ func CheckAirlineAlready(w http.ResponseWriter, r *http.Request, airlineId strin
 		return false
 	}
 
+	// Set value
 	var airline int
 
 	for rows.Next() {

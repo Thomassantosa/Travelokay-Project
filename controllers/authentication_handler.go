@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 	"time"
@@ -73,8 +72,9 @@ func Authenticate(next http.HandlerFunc, accessType int) http.HandlerFunc {
 }
 
 func ValidateUserToken(r *http.Request, accessType int) bool {
-	isAccessTokenValid, id, username, userType := ValidateTokenFormCookies(r)
-	fmt.Println(id, username, userType, accessType, isAccessTokenValid)
+	isAccessTokenValid, _, _, userType := ValidateTokenFormCookies(r)
+	// isAccessTokenValid, id, username, userType := ValidateTokenFormCookies(r)
+	// fmt.Println(id, username, userType, accessType, isAccessTokenValid)
 
 	if isAccessTokenValid {
 		isUserValid := userType == accessType
@@ -88,7 +88,7 @@ func ValidateUserToken(r *http.Request, accessType int) bool {
 func ValidateTokenFormCookies(r *http.Request) (bool, int, string, int) {
 
 	cookie, err1 := r.Cookie(tokenName)
-	log.Println(cookie)
+	// log.Println(cookie)
 	if err1 == nil {
 		accessToken := cookie.Value
 		accessClaims := &Claims{}

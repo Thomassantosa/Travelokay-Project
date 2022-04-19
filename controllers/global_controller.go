@@ -171,7 +171,7 @@ func GetHotelList(w http.ResponseWriter, r *http.Request) {
 	defer db.Close()
 
 	// Get value from query params
-	hotelCity := r.URL.Query().Get("hotel_city")
+	hotelCity := r.URL.Query().Get("hotelCity")
 
 	// Query
 	rows, errQuery := db.Query("SELECT * FROM hotels WHERE hotel_city = ?", hotelCity)
@@ -220,7 +220,7 @@ func GetRoomList(w http.ResponseWriter, r *http.Request) {
 	defer db.Close()
 
 	// Get value from query params
-	hotelID := r.URL.Query().Get("hotel_id")
+	hotelID := r.URL.Query().Get("hotelId")
 
 	// Query
 	rows, errQuery := db.Query("SELECT room_id, hotel_id, room_name, room_type, room_price, room_facility, room_capacity, room_status FROM rooms WHERE hotel_id = ?", hotelID)
@@ -273,10 +273,6 @@ func GetFlightList(w http.ResponseWriter, r *http.Request) {
 	destinationCity := r.URL.Query().Get("destinationCity")
 	seatType := r.URL.Query().Get("seatType")
 	departureDate := r.URL.Query().Get("departureDate")
-	log.Println(departureCity)
-	log.Println(destinationCity)
-	log.Println(seatType)
-	log.Println(departureDate)
 
 	// Query
 	query :=

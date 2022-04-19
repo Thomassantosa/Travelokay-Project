@@ -9,11 +9,12 @@
     -> Handle endpoint access (admin, user, partner)
 4) Tools
     -> Gomail       : Order receipt dikirimkan ke email user
-    -> GoCRON       : Tiap tanggal khusus mengirimkan promo ke email user
-    -> Goroutine    : Proses query & pengiriman email dilakukan bersamaan
+    -> GoCRON       : Tiap akhir bulan mengirimkan promo ke email user
+    -> Goroutine    : Proses pengiriman response & pengiriman email dilakukan bersamaan
 
 5) Github Action
-    -> ?
+    -> https://tutorialedge.net/golang/github-actions-for-go-projects/
+    -> https://github.com/marketplace/actions/run-golangci-lint
 
 [Optional]
 1) GORM
