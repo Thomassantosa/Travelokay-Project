@@ -11,9 +11,46 @@ import (
 	"github.com/Travelokay-Project/models"
 )
 
-func GetFlightPartnerList(w http.ResponseWriter, r *http.Request) {
+func AddNewFlight(w http.ResponseWriter, r *http.Request) {
+	db := Connect()
+	defer db.Close()
 
-	// Connect to database
+	err := r.ParseForm()
+	if err != nil {
+		SendErrorResponse(w, 500)
+		log.Println(err)
+		return
+	}
+
+	airplaneId := r.Form.Get("airplaneId")
+	departureAirport := r.Form.Get("departureAirport")
+	destinationAirport := r.Form.Get("destinationAirport")
+	flightType := r.Form.Get("flightType")
+	flightNumber := r.Form.Get("flightNumber")
+	departureTime := r.Form.Get("departureTime")
+	arrivalTime := r.Form.Get("arrivalTime")
+	travelTime := r.Form.Get("travelTime")
+
+	query := `
+		INSERT INTO flights(airplane_id, departure_airport, 
+		destination_airport, flight_type, flight_number, departure_time, 
+		arrival_time, travel_time) VALUES (?,?,?,?,?,?,?,?)
+	`
+
+	_, errQuery := db.Exec(query, airplaneId, departureAirport, destinationAirport, flightType, flightNumber, departureTime, arrivalTime, travelTime)
+	if errQuery != nil {
+		log.Println("(ERROR)\t", errQuery)
+		SendErrorResponse(w, 400)
+		return
+	} else {
+		log.Println("(SUCCESS)\t", "Add new flight request")
+		SendSuccessResponse(w)
+		return
+	}
+
+}
+
+func GetFlightPartnerList(w http.ResponseWriter, r *http.Request) {
 	db := Connect()
 	defer db.Close()
 
@@ -97,58 +134,12 @@ func GetFlightPartnerList(w http.ResponseWriter, r *http.Request) {
 	log.Println("(SUCCESS)\t", "Get list flights request")
 }
 
-func AddNewFlight(w http.ResponseWriter, r *http.Request) {
-
-	// Connect to database
-	db := Connect()
-	defer db.Close()
-
-	// Get value from form
-	err := r.ParseForm()
-	if err != nil {
-		SendErrorResponse(w, 500)
-		log.Println(err)
-		return
-	}
-
-	airplaneId := r.Form.Get("airplaneId")
-	departureAirport := r.Form.Get("departureAirport")
-	destinationAirport := r.Form.Get("destinationAirport")
-	flightType := r.Form.Get("flightType")
-	flightNumber := r.Form.Get("flightNumber")
-	departureTime := r.Form.Get("departureTime")
-	arrivalTime := r.Form.Get("arrivalTime")
-	travelTime := r.Form.Get("travelTime")
-
-	query := `
-		INSERT INTO flights(airplane_id, departure_airport, 
-		destination_airport, flight_type, flight_number, departure_time, 
-		arrival_time, travel_time) VALUES (?,?,?,?,?,?,?,?)
-	`
-
-	_, errQuery := db.Exec(query, airplaneId, departureAirport, destinationAirport, flightType, flightNumber, departureTime, arrivalTime, travelTime)
-	if errQuery != nil {
-		log.Println("(ERROR)\t", errQuery)
-		SendErrorResponse(w, 400)
-		return
-	} else {
-		log.Println("(SUCCESS)\t", "Add new flight request")
-		SendSuccessResponse(w)
-		return
-	}
-
-}
-
 func UpdatePartner(w http.ResponseWriter, r *http.Request) {
-
-	// Connect to database
 	db := Connect()
 	defer db.Close()
 
-	// Get value from cookie
 	partnerId := GetIdFromCookie(r)
 
-	// Get value from form
 	fullname := r.FormValue("fullname")
 	username := r.FormValue("username")
 	email := r.FormValue("email")
@@ -162,7 +153,6 @@ func UpdatePartner(w http.ResponseWriter, r *http.Request) {
 	hasher.Write([]byte(password))
 	encryptedPassword := hex.EncodeToString(hasher.Sum(nil))
 
-	// Query
 	query := "UPDATE users SET"
 
 	if fullname != "" {
@@ -187,7 +177,7 @@ func UpdatePartner(w http.ResponseWriter, r *http.Request) {
 		query += " address = '" + companyName + "',"
 	}
 
-	queryNew := query[:len(query)-1] // Delete last coma
+	queryNew := query[:len(query)-1]
 	queryNew += " WHERE user_id = " + strconv.Itoa(partnerId)
 
 	_, errQuery := db.Exec(queryNew)
@@ -202,12 +192,9 @@ func UpdatePartner(w http.ResponseWriter, r *http.Request) {
 }
 
 func DeleteFlight(w http.ResponseWriter, r *http.Request) {
-
-	// Connect to database
 	db := Connect()
 	defer db.Close()
 
-	// Get value from form
 	err := r.ParseForm()
 	if err != nil {
 		SendErrorResponse(w, 500)
@@ -215,10 +202,8 @@ func DeleteFlight(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	//Pakai Params
 	flightId := r.FormValue("flightId")
 
-	//Check if airline is already
 	if !CheckFlightInOrder(w, r, flightId) {
 		return
 	}
@@ -234,41 +219,10 @@ func DeleteFlight(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func CheckFlightInOrder(w http.ResponseWriter, r *http.Request, flightId string) bool {
-
-	// Connect to database
-	db := Connect()
-	defer db.Close()
-
-	// Query
-	rows, errQuery := db.Query("SELECT flight_id FROM seats WHERE flight_id = ?", flightId)
-
-	if errQuery != nil {
-		log.Println("(ERROR)\t", errQuery)
-		SendErrorResponse(w, 500)
-		return false
-	}
-
-	var theFlightId int
-
-	for rows.Next() {
-		if err := rows.Scan(&theFlightId); err != nil {
-			log.Println("(ERROR)\t", err)
-			SendErrorResponse(w, 500)
-			return false
-		}
-	}
-
-	return true
-}
-
 func AddNewAirline(w http.ResponseWriter, r *http.Request) {
-
-	// Connect to database
 	db := Connect()
 	defer db.Close()
 
-	// Get value from form
 	err := r.ParseForm()
 	if err != nil {
 		SendErrorResponse(w, 500)
@@ -295,12 +249,9 @@ func AddNewAirline(w http.ResponseWriter, r *http.Request) {
 }
 
 func AddNewAirplane(w http.ResponseWriter, r *http.Request) {
-
-	// Connect to database
 	db := Connect()
 	defer db.Close()
 
-	// Get value from form
 	err := r.ParseForm()
 	if err != nil {
 		SendErrorResponse(w, 500)
@@ -333,12 +284,35 @@ func AddNewAirplane(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func CheckAirlineAlready(w http.ResponseWriter, r *http.Request, airlineId string) bool {
-
+func CheckFlightInOrder(w http.ResponseWriter, r *http.Request, flightId string) bool {
 	db := Connect()
 	defer db.Close()
 
-	// Query
+	rows, errQuery := db.Query("SELECT flight_id FROM seats WHERE flight_id = ?", flightId)
+
+	if errQuery != nil {
+		log.Println("(ERROR)\t", errQuery)
+		SendErrorResponse(w, 500)
+		return false
+	}
+
+	var theFlightId int
+
+	for rows.Next() {
+		if err := rows.Scan(&theFlightId); err != nil {
+			log.Println("(ERROR)\t", err)
+			SendErrorResponse(w, 500)
+			return false
+		}
+	}
+
+	return true
+}
+
+func CheckAirlineAlready(w http.ResponseWriter, r *http.Request, airlineId string) bool {
+	db := Connect()
+	defer db.Close()
+
 	rows, errQuery := db.Query("SELECT airline_id FROM airplanes WHERE airline_id = ?", airlineId)
 
 	if errQuery != nil {
